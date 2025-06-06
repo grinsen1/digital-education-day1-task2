@@ -1063,7 +1063,7 @@ showPlatformPreview() {
         const vtrFormatted = platform['VTR%'] ? (platform['VTR%'] * 100).toFixed(0) + '%' : '-';
         
         // Сокращаем название если слишком длинное
-        const siteName = platform.Сайт.length > 20 ? platform.Сайт.substring(0, 17) + '...' : platform.Сайт;
+        const siteName = platform.Сайт;
         
         html += `
             <div class="platform-preview-item">
