@@ -621,7 +621,7 @@ select.form-control {
   display: block;
 }
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 /* Accessibility */
@@ -915,10 +915,6 @@ select.form-control {
   cursor: pointer;
 }
 
-.hidden {
-  display: none !important;
-}
-
 /* Секция базы данных */
 .database-tools {
   margin-bottom: var(--space-24);
@@ -1168,11 +1164,11 @@ select.form-control {
   border-top: 1px solid var(--color-card-border);
 }
 
-/* Стили для сетки workspace - уменьшенные пропорции */
+/* Стили для сетки workspace */
 .assignment-workspace-grid {
   display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  gap: 1.5rem;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
 }
 
 .platform-preview-sidebar {
@@ -1181,93 +1177,112 @@ select.form-control {
   overflow-y: auto;
 }
 
-/* Более компактные карточки предпросмотра */
+/* Очень компактные карточки предпросмотра */
 #platform-preview .card {
-  margin-bottom: 1rem;
-  font-size: 0.8rem;
+  margin-bottom: 0;
+  font-size: 0.75rem;
 }
 
 #platform-preview .card__header {
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--color-card-border-inner);
 }
 
 #platform-preview .card__header h4 {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   margin: 0;
+  font-weight: 600;
 }
 
 #platform-preview .card__body {
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 0.75rem;
 }
 
-/* Компактная сетка для каждой площадки */
+/* Максимально компактные элементы площадок */
 .platform-preview-item {
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--color-card-border);
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-card-border-inner);
 }
 
 .platform-preview-item:last-child {
   border-bottom: none;
   margin-bottom: 0;
+  padding-bottom: 0;
 }
 
 .platform-preview-item h5 {
-  margin: 0 0 0.5rem 0;
-  font-size: 0.85rem;
+  margin: 0 0 0.25rem 0;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--color-primary);
+  line-height: 1.2;
 }
 
+/* Трехколоночная сетка метрик для максимальной компактности */
 .platform-metrics-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.25rem;
-  font-size: 0.75rem;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.15rem;
+  font-size: 0.65rem;
 }
 
 .platform-metric {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.15rem 0;
-  border-bottom: 1px solid var(--color-card-border-inner);
-}
-
-.platform-metric:last-child {
-  border-bottom: none;
+  flex-direction: column;
+  padding: 0.1rem 0.25rem;
+  border-radius: 3px;
+  background-color: var(--color-secondary);
+  text-align: center;
+  min-height: 2.2rem;
+  justify-content: center;
 }
 
 .platform-metric .label {
   font-weight: 500;
   color: var(--color-text-secondary);
-  font-size: 0.7rem;
+  font-size: 0.6rem;
+  line-height: 1;
+  margin-bottom: 0.1rem;
 }
 
 .platform-metric .value {
   font-weight: 600;
   color: var(--color-text);
-  text-align: right;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
+  line-height: 1;
 }
 
-/* Итоговые показатели - еще компактнее */
+/* Компактные итоговые показатели */
 .platform-totals {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 2px solid var(--color-primary);
+  margin-top: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--color-primary);
 }
 
 .platform-totals h5 {
-  margin: 0 0 0.5rem 0;
-  font-size: 0.8rem;
+  margin: 0 0 0.25rem 0;
+  font-size: 0.7rem;
   color: var(--color-text);
+  text-align: center;
 }
 
 .platform-totals-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.25rem;
+  gap: 0.15rem;
+}
+
+.platform-totals .platform-metric {
+  background-color: rgba(var(--color-primary), 0.1);
+  border: 1px solid rgba(var(--color-primary), 0.2);
+}
+
+/* Адаптивность - на маленьких экранах двухколоночная сетка */
+@media (max-width: 1200px) {
+  .platform-metrics-grid {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 /* Адаптивный дизайн */
@@ -1310,9 +1325,21 @@ select.form-control {
   .select-wrapper::after {
     right: 8px;
   }
+
+  .platform-preview-sidebar {
+    max-height: 40vh;
+  }
+  
+  .platform-metrics-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  #platform-preview .card__header,
+  #platform-preview .card__body {
+    padding: 0.4rem 0.5rem;
+  }
 }
 
-/* Адаптивность для workspace */
 @media (max-width: 1024px) {
   .assignment-workspace-grid {
     grid-template-columns: 1fr;
@@ -1322,21 +1349,8 @@ select.form-control {
     max-height: 50vh;
   }
   
-  .platform-metrics-grid,
-  .platform-totals-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Очень маленькие экраны */
-@media (max-width: 768px) {
-  .platform-preview-sidebar {
-    max-height: 40vh;
-  }
-  
-  #platform-preview .card__header,
-  #platform-preview .card__body {
-    padding: 0.5rem;
+  .platform-metrics-grid {
+    grid-template-columns: 1fr 1fr 1fr;
   }
 }
 
