@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Обучение Диджитал-Медиапланированию</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app">
+        <!-- Главное навигационное меню -->
+        <header class="header">
+            <div class="container">
+                <div class="flex justify-between items-center py-16">
+                    <h1 class="header-title">Диджитал-Медиапланирование</h1>
+                    <nav class="main-nav">
+                        <ul class="flex gap-8">
+                            <li><button class="nav-item active" data-section="home">Главная</button></li>
+                            <li><button class="nav-item" data-section="learning">Обучение</button></li>
+                            <li><button class="nav-item" data-section="assignments">Задания</button></li>
+                            <li><button class="nav-item" data-section="database">База данных</button></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <main class="main container">
+            <!-- Секция Главная -->
+            <section id="home" class="section active">
+                <div class="hero-section">
+                    <h2 class="section-title">Добро пожаловать в курс по диджитал-медиапланированию</h2>
+                    <p class="section-description">
+                        Научитесь эффективно планировать рекламные кампании в цифровой среде.
+                        Изучите основные понятия, площадки и инструменты медиапланирования,
+                        а также выполните практические задания для закрепления навыков.
+                    </p>
+                    
+                    <div class="learning-path">
+                        <h3>Структура обучения</h3>
+                        <div class="path-steps">
+                            <div class="path-step card">
+                                <div class="step-number">1</div>
+                                <h4>Основы и понятия</h4>
+                                <p>Изучите ключевые термины и метрики медиапланирования, такие как CPM, CTR, CPC и другие.</p>
+                            </div>
+                            <div class="path-step card">
+                                <div class="step-number">2</div>
+                                <h4>Практические задания</h4>
+                                <p>Выполните задания по выбору площадок для достижения различных маркетинговых целей.</p>
+                            </div>
+                            <div class="path-step card">
+                                <div class="step-number">3</div>
+                                <h4>База знаний</h4>
+                                <p>Изучите детальную информацию о рекламных площадках и их показателях эффективности.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="cta-container">
+                            <button class="btn btn--primary" id="start-learning-btn">Начать обучение</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Секция Обучение -->
+            <section id="learning" class="section">
+                <h2 class="section-title">Обучение медиапланированию</h2>
+                
+                <div class="learning-content">
+                    <!-- Основные понятия -->
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Основные понятия и метрики</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="metrics-grid">
+                                <div class="metric-item">
+                                    <h4>CPM (Cost Per Mille)</h4>
+                                    <p>Стоимость тысячи показов рекламы. Основная метрика для закупки рекламы.</p>
+                                    <p>Бенчмарк: <span class="benchmark" id="cpm-benchmark"></span> руб.</p>
+                                </div>
+                                <div class="metric-item">
+                                    <h4>CTR (Click-Through Rate)</h4>
+                                    <p>Показатель кликабельности рекламы. Отношение числа кликов к показам.</p>
+                                    <p>Бенчмарк: <span class="benchmark" id="ctr-benchmark"></span>%</p>
+                                </div>
+                                <div class="metric-item">
+                                    <h4>CPC (Cost Per Click)</h4>
+                                    <p>Стоимость одного клика по рекламе.</p>
+                                    <p>Бенчмарк: <span class="benchmark" id="cpc-benchmark"></span> руб.</p>
+                                </div>
+                                <div class="metric-item">
+                                    <h4>CPV (Cost Per View)</h4>
+                                    <p>Стоимость одного просмотра видео-рекламы.</p>
+                                    <p>Относительный показатель, зависит от CPM и VTR.</p>
+                                </div>
+                                <div class="metric-item">
+                                    <h4>VTR (View-Through Rate)</h4>
+                                    <p>Показатель досмотров видео-рекламы до конца.</p>
+                                    <p>Бенчмарк: <span class="benchmark" id="vtr-benchmark"></span>%</p>
+                                </div>
+                                <div class="metric-item">
+                                    <h4>CPT (Cost Per Thousand)</h4>
+                                    <p>Стоимость тысячи контактов с учетом частоты.</p>
+                                    <p>Бенчмарк: <span class="benchmark" id="cpt-benchmark"></span> руб.</p>
+                                </div>
+                                <div class="metric-item">
+                                    <h4>CPA (Cost Per Action)</h4>
+                                    <p>Стоимость целевого действия на сайте.</p>
+                                    <p>Бенчмарк: <span class="benchmark" id="cpa-benchmark"></span> руб.</p>
+                                </div>
+                                <div class="metric-item">
+                                    <h4>PI (Page Interest)</h4>
+                                    <p>Индекс заинтересованности страницей. Оценивает качество трафика.</p>
+                                    <p>Чем выше значение, тем выше качество целевого трафика.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Шпаргалка по рекламным форматам -->
+                    <div class="card mt-8">
+                        <div class="card__header">
+                            <h3>Рекомендации по выбору площадок</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="format-grid">
+                                <div class="format-item">
+                                    <h4>Видео-реклама</h4>
+                                    <p><strong>Преимущества:</strong> Высокая вовлеченность, эмоциональное воздействие</p>
+                                    <p><strong>Когда использовать:</strong> Для повышения узнаваемости бренда, запуска новых продуктов</p>
+                                    <p><strong>Ключевые метрики:</strong> VTR, CPV, охват, частота</p>
+                                </div>
+                                <div class="format-item">
+                                    <h4>Баннерная реклама</h4>
+                                    <p><strong>Преимущества:</strong> Широкий охват, низкая стоимость</p>
+                                    <p><strong>Когда использовать:</strong> Для охватных кампаний, ремаркетинга</p>
+                                    <p><strong>Ключевые метрики:</strong> CPM, CTR, CPC, частота</p>
+                                </div>
+                                <div class="format-item">
+                                    <h4>Социальные сети</h4>
+                                    <p><strong>Преимущества:</strong> Точный таргетинг, высокая вовлеченность</p>
+                                    <p><strong>Когда использовать:</strong> Для привлечения аудитории с определенными интересами</p>
+                                    <p><strong>Ключевые метрики:</strong> CPM, CTR, CPC, CPA, охват</p>
+                                </div>
+                            </div>
+
+                            <div class="mt-8">
+                                <h4>Лучшие практики:</h4>
+                                <ul class="best-practices">
+                                    <li>Для максимизации охвата выбирайте площадки с низким CPM и высокой аудиторией</li>
+                                    <li>Для качественного трафика на сайт выбирайте площадки с высоким CTR и низким CPC</li>
+                                    <li>Для Brandformance (охват + конверсия) используйте комбинацию видео и баннерной рекламы</li>
+                                    <li>Всегда сравнивайте показатели площадок с бенчмарками для принятия решений</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- График сравнения метрик -->
+                    <div class="card mt-8">
+                        <div class="card__header">
+                            <h3>Сравнение метрик по типам площадок</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="chart-container" style="height: 400px">
+                                <canvas id="metricsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Секция Задания -->
+            <section id="assignments" class="section">
+                <h2 class="section-title">Практические задания</h2>
+                
+                <div class="assignments-list" id="assignment-list-container">
+                    <!-- Список заданий будет добавлен динамически -->
+                </div>
+                
+                <div id="assignment-interface" class="assignment-interface hidden">
+                    <div class="flex gap-8 items-center mb-8">
+                        <button id="back-to-assignments" class="btn btn--secondary">← Назад к заданиям</button>
+                        <h3 id="current-assignment-title">Название задания</h3>
+                    </div>
+
+                    <div class="assignment-content">
+                        <div class="assignment-brief">
+                            <div class="card">
+                                <div class="card__header">
+                                    <h3>Описание задания</h3>
+                                </div>
+                                <div class="card__body">
+                                    <p id="assignment-description"></p>
+                                    <p id="assignment-slots"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="assignment-workspace">
+                            <div class="card">
+                                <div class="card__header">
+                                    <h3>Выбор площадок</h3>
+                                </div>
+                                <div class="card__body">
+                                    <div id="selected-platforms" class="selected-platforms">
+                                        <!-- Слоты для выбранных площадок -->
+                                    </div>
+
+                                    <div class="platform-selector mt-8">
+                                        <div class="form-group">
+                                            <label for="platform-select" class="form-label">Добавить площадку:</label>
+                                            <select id="platform-select" class="form-control">
+                                                <option value="">Выберите площадку</option>
+                                                <!-- Список площадок будет добавлен динамически -->
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card mt-8">
+                                <div class="card__header">
+                                    <h3>Обоснование выбора</h3>
+                                </div>
+                                <div class="card__body">
+                                    <div class="form-group">
+                                        <label for="justification" class="form-label">Объясните ваш выбор площадок:</label>
+                                        <textarea id="justification" class="form-control" rows="4" placeholder="Опишите, почему вы выбрали именно эти площадки для решения задания..."></textarea>
+                                    </div>
+                                    <button id="submit-assignment" class="btn btn--primary mt-8">Отправить решение</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="assignment-feedback" class="assignment-feedback hidden">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Результаты выполнения задания</h3>
+                        </div>
+                        <div class="card__body">
+                            <div id="feedback-content">
+                                <!-- Здесь будет обратная связь -->
+                            </div>
+                            <div class="flex gap-8 mt-8">
+                                <button id="retry-assignment" class="btn btn--secondary">Попробовать еще раз</button>
+                                <button id="back-to-assignments-from-feedback" class="btn btn--primary">К списку заданий</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Секция База данных -->
+            <section id="database" class="section">
+                <h2 class="section-title">База данных площадок</h2>
+                
+                <div class="database-tools">
+                    <div class="flex gap-8 items-center justify-between mb-8">
+                        <div class="filter-tools flex gap-8">
+                            <div class="form-group">
+                                <label for="category-filter" class="form-label">Категория:</label>
+                                <select id="category-filter" class="form-control">
+                                    <option value="all">Все категории</option>
+                                    <option value="Видео">Видео</option>
+                                    <option value="Баннерная реклама">Баннерная реклама</option>
+                                    <option value="Социальные сети">Социальные сети</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="sort-field" class="form-label">Сортировать по:</label>
+                                <select id="sort-field" class="form-control">
+                                    <option value="CPM">CPM</option>
+                                    <option value="CTR%">CTR</option>
+                                    <option value="CPC">CPC</option>
+                                    <option value="VTR%">VTR</option>
+                                    <option value="CPT">CPT</option>
+                                    <option value="CPA">CPA</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="search-tools">
+                            <div class="form-group">
+                                <label for="platform-search" class="form-label">Поиск площадки:</label>
+                                <input type="text" id="platform-search" class="form-control" placeholder="Введите название...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Таблица с площадками -->
+                    <div class="card">
+                        <div class="card__body platforms-table-container">
+                            <table id="platforms-table" class="platforms-table">
+                                <thead>
+                                    <tr>
+                                        <th>№</th>
+                                        <th>Площадка</th>
+                                        <th>Формат</th>
+                                        <th>Категория</th>
+                                        <th>CPM</th>
+                                        <th>CTR%</th>
+                                        <th>CPC</th>
+                                        <th>VTR%</th>
+                                        <th>CPT</th>
+                                        <th>CPA</th>
+                                        <th>Сравнить</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="platforms-table-body">
+                                    <!-- Данные будут добавлены динамически -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- График сравнения выбранных площадок -->
+                    <div id="comparison-chart-container" class="card mt-8 hidden">
+                        <div class="card__header">
+                            <h3>Сравнение выбранных площадок</h3>
+                        </div>
+                        <div class="card__body">
+                            <div id="selected-platforms-list" class="selected-platforms-list mb-8">
+                                <!-- Список выбранных для сравнения площадок -->
+                            </div>
+                            <div class="chart-container" style="height: 400px">
+                                <canvas id="comparisonChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
