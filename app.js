@@ -1152,6 +1152,7 @@ submitAssignment() {
     this.generateFeedback();
 }
 
+// Новая функция для отправки через Google Apps Script
 async sendToGoogleAppsScript(justification) {
     try {
         // Получаем имя студента
@@ -1229,6 +1230,32 @@ async sendToGoogleAppsScript(justification) {
             }
         }, 2000);
     }
+}
+
+// Функция для копирования данных в буфер обмена (резервный вариант)
+copyDataToClipboard(justification) {
+    const studentName = prompt('Введите ваше имя:') || 'Анонимный студент';
+    
+    const selectedPlatformsNames = this.selectedPlatforms.map(id => {
+        const platform = this.data.platforms.find(p => p['п/п'] === id);
+        return platform ? platform.Сайт : `Площадка ${id}`;
+    });
+    
+    const assignmentTitle = this.data.assignments[this.currentAssignment]?.title || 'Неизвестное задание';
+    
+    const textData = `
+Студент: ${studentName}
+Задание: ${assignmentTitle}
+Выбранные площадки: ${selectedPlatformsNames.join(', ')}
+Обоснование: ${justification}
+Дата: ${new Date().toLocaleString('ru-RU')}
+    `.trim();
+    
+    navigator.clipboard.writeText(textData).then(() => {
+        this.showNotification('📋 Данные скопированы в буфер обмена');
+    }).catch(() => {
+        alert('Данные для отправки тренеру:\n\n' + textData);
+    });
 }
 
 
