@@ -873,6 +873,7 @@ select.form-control {
 
 .assignment-content {
   display: grid;
+  grid-template-columns: 1fr 3fr;
   gap: var(--space-24);
 }
 
@@ -1166,7 +1167,7 @@ select.form-control {
 /* Стили для сетки workspace */
 .assignment-workspace-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 3fr 1fr;
   gap: 2rem;
 }
 
