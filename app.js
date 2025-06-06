@@ -1136,7 +1136,7 @@ showPlatformPreview() {
     }
     
     // Отправка решения задания
-  submitAssignment() {
+submitAssignment() {
     const justificationElement = document.getElementById('justification');
     const justification = justificationElement ? justificationElement.value : '';
     
@@ -1145,61 +1145,71 @@ showPlatformPreview() {
         return;
     }
 
-    // Отправляем данные в Google Forms
-    this.sendToGoogleForms(justification);
+    // Отправляем данные в Google Sheets
+    this.sendToGoogleSheets(justification);
     
     // Генерируем локальную оценку
     this.generateFeedback();
 }
 
-// Новый метод для отправки данных в Google Forms
-sendToGoogleForms(justification) {
-    // Получаем имя студента
-    const studentName = prompt('Введите ваше имя:') || 'Анонимный студент';
-    
-    // Формируем результаты
-    const selectedPlatformsNames = this.selectedPlatforms.map(id => {
-        const platform = this.data.platforms.find(p => p['п/п'] === id);
-        return platform ? platform.Сайт : `Площадка ${id}`;
-    });
-    
-    const assignmentTitle = this.data.assignments[this.currentAssignment]?.title || 'Неизвестное задание';
-    
-    const results = `
-Задание: ${assignmentTitle}
-Выбранные площадки (${this.selectedPlatforms.length}):
-${selectedPlatformsNames.map((name, index) => `${index + 1}. ${name}`).join('\n')}
+// Новая функция для отправки в Google Sheets
+async sendToGoogleSheets(justification) {
+    try {
+        // Получаем имя студента
+        const studentName = prompt('Введите ваше имя:') || 'Анонимный студент';
+        
+        // Формируем список выбранных площадок
+        const selectedPlatformsNames = this.selectedPlatforms.map(id => {
+            const platform = this.data.platforms.find(p => p['п/п'] === id);
+            return platform ? platform.Сайт : `Площадка ${id}`;
+        });
+        
+        const assignmentTitle = this.data.assignments[this.currentAssignment]?.title || 'Неизвестное задание';
+        
+        // Подготавливаем данные для отправки в виде строки таблицы
+        const rowData = [
+            studentName,                                    // Колонка A: Имя
+            assignmentTitle,                               // Колонка B: Задание
+            selectedPlatformsNames.join(', '),             // Колонка C: Площадки
+            justification,                                 // Колонка D: Обоснование
+            new Date().toLocaleString('ru-RU')             // Колонка E: Дата
+        ];
 
-Дата выполнения: ${new Date().toLocaleString('ru-RU')}
-    `.trim();
+        // Показываем индикатор загрузки
+        this.showNotification('⏳ Отправка данных...');
 
-    // Формируем данные для отправки
-    const formData = new FormData();
-    formData.append(GOOGLE_FORM_CONFIG.entries.name, studentName);
-    formData.append(GOOGLE_FORM_CONFIG.entries.results, results);
-    formData.append(GOOGLE_FORM_CONFIG.entries.justification, justification);
-
-    // URL для отправки данных
-    const submitURL = `https://docs.google.com/forms/d/e/${GOOGLE_FORM_CONFIG.formId}/formResponse`;
-
-    // Отправляем данные
-    fetch(submitURL, {
-        method: 'POST',
-        mode: 'no-cors', // Важно для Google Forms
-        body: formData
-    })
-    .then(() => {
-        console.log('Данные успешно отправлены в Google Forms');
-        this.showNotification('✅ Ваше решение отправлено тренеру!');
-    })
-    .catch(error => {
-        console.error('Ошибка отправки данных:', error);
-        this.showNotification('❌ Ошибка отправки. Попробуйте еще раз.');
-    });
+        // Отправляем данные в Google Sheets
+        const result = await this.appendToGoogleSheets(rowData);
+        
+        if (result.success) {
+            console.log('Данные успешно отправлены в Google Sheets');
+            this.showNotification('✅ Ваше решение отправлено тренеру!');
+            
+            // Логируем для отладки
+            console.log('Отправленные данные:', {
+                studentName,
+                assignmentTitle,
+                platforms: selectedPlatformsNames,
+                justification,
+                timestamp: new Date().toLocaleString('ru-RU')
+            });
+        } else {
+            throw new Error(result.error || 'Неизвестная ошибка');
+        }
+        
+    } catch (error) {
+        console.error('Ошибка отправки данных в Google Sheets:', error);
+        this.showNotification('❌ Ошибка отправки. Проверьте настройки API.');
+        
+        // Показываем детали ошибки для отладки
+        if (error.message.includes('API key')) {
+            console.error('Проблема с API ключом. Проверьте GOOGLE_SHEETS_CONFIG.apiKey');
+        } else if (error.message.includes('not found')) {
+            console.error('Таблица не найдена. Проверьте GOOGLE_SHEETS_CONFIG.sheetId');
+        }
+    }
 }
-
-// Метод для показа уведомлений
-showNotification(message) {
+ showNotification(message) {
     // Удаляем предыдущее уведомление если есть
     const existingNotification = document.querySelector('.custom-notification');
     if (existingNotification) {
@@ -1209,54 +1219,100 @@ showNotification(message) {
     // Создаем новое уведомление
     const notification = document.createElement('div');
     notification.className = 'custom-notification';
+    
+    // Определяем тип уведомления для стилизации
+    let backgroundColor = 'var(--color-primary)';
+    if (message.includes('❌')) {
+        backgroundColor = 'var(--color-error)';
+    } else if (message.includes('⏳')) {
+        backgroundColor = 'var(--color-warning)';
+    }
+    
     notification.style.cssText = `
         position: fixed;
         top: 20px;
         right: 20px;
-        background: var(--color-primary);
+        background: ${backgroundColor};
         color: white;
         padding: 1rem 1.5rem;
         border-radius: var(--radius-base);
         z-index: 10000;
         box-shadow: var(--shadow-lg);
         font-weight: var(--font-weight-medium);
-        max-width: 300px;
+        max-width: 350px;
         word-wrap: break-word;
         animation: slideIn 0.3s ease-out;
+        font-size: var(--font-size-sm);
+        line-height: 1.4;
     `;
     notification.textContent = message;
     
-    // Добавляем анимацию
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
+    // Добавляем анимацию если её еще нет
+    if (!document.querySelector('#notification-styles')) {
+        const style = document.createElement('style');
+        style.id = 'notification-styles';
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
             }
-            to {
-                transform: translateX(0);
-                opacity: 1;
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
             }
-        }
-    `;
-    document.head.appendChild(style);
+        `;
+        document.head.appendChild(style);
+    }
     
     document.body.appendChild(notification);
     
-    // Автоматически убираем через 4 секунды
+    // Автоматически убираем через время (больше для ошибок)
+    const duration = message.includes('❌') ? 6000 : 4000;
     setTimeout(() => {
         if (notification.parentNode) {
-            notification.style.animation = 'slideIn 0.3s ease-out reverse';
+            notification.style.animation = 'slideOut 0.3s ease-out';
             setTimeout(() => {
                 if (notification.parentNode) {
                     notification.remove();
                 }
             }, 300);
         }
-    }, 4000);
+    }, duration);
 }
-    
+
+// Дополнительная функция для тестирования подключения
+async testGoogleSheetsConnection() {
+    try {
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_CONFIG.sheetId}?key=${GOOGLE_SHEETS_CONFIG.apiKey}`;
+        
+        const response = await fetch(url);
+        
+        if (response.ok) {
+            const data = await response.json();
+            console.log('✅ Подключение к Google Sheets работает');
+            console.log('Название таблицы:', data.properties.title);
+            return true;
+        } else {
+            console.error('❌ Ошибка подключения к Google Sheets:', response.status);
+            return false;
+        }
+    } catch (error) {
+        console.error('❌ Ошибка тестирования подключения:', error);
+        return false;
+    }
+}   
     // Отрисовка таблицы площадок
     renderPlatformsTable() {
         const tbody = document.getElementById('platforms-table-body');
@@ -1562,7 +1618,46 @@ showNotification(message) {
             });
         });
     }
-    
+async appendToGoogleSheets(rowData) {
+    try {
+        // Формируем URL для API запроса
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_CONFIG.sheetId}/values/${GOOGLE_SHEETS_CONFIG.range}:append?valueInputOption=RAW&key=${GOOGLE_SHEETS_CONFIG.apiKey}`;
+        
+        // Подготавливаем тело запроса
+        const requestBody = {
+            values: [rowData]  // Массив строк для добавления
+        };
+        
+        // Выполняем запрос к Google Sheets API
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody)
+        });
+        
+        // Проверяем ответ
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`HTTP ${response.status}: ${errorData.error?.message || 'Неизвестная ошибка API'}`);
+        }
+        
+        const responseData = await response.json();
+        
+        return {
+            success: true,
+            data: responseData,
+            updatedRows: responseData.updates?.updatedRows || 1
+        };
+        
+    } catch (error) {
+        return {
+            success: false,
+            error: error.message
+        };
+    }
+}    
     // Сортировка таблицы площадок
     sortPlatformsTable() {
         const sortField = document.getElementById('sort-field');
@@ -1596,11 +1691,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.mediaPlanningApp = new MediaPlanningApp();
 });
 
-const GOOGLE_FORM_CONFIG = {
-    formId: '1Miz9JuJ5kSxJcI_tBnnMNf7dgS_nAswbQFKvZEIf0iI',
-    entries: {
-        name: 'entry.733297937',        // Замените на ваш entry ID для поля "Имя"
-        results: 'entry.1976183774',     // Замените на ваш entry ID для поля "Результаты"
-        justification: 'entry.853511655' // Замените на ваш entry ID для поля "Обоснование"
-    }
+const GOOGLE_SHEETS_CONFIG = {
+    sheetId: '1o4M7BI6R54Nd3w7MnGh8nynMrUkWv0iSEqWmUVjGJ4A',  // Из URL таблицы
+    apiKey: 'AIzaSyCUfQ5U8E3rvWcaiEaCp9VvTX9qwplz_C0',       // Из Google Cloud Console
+    range: 'Sheet1!A:E'  // Диапазон: лист1, колонки A-E
 };
