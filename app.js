@@ -1145,20 +1145,100 @@ submitAssignment() {
         return;
     }
 
-    // Отправляем данные в Google Sheets
-    this.sendToGoogleSheets(justification);
+    // Проверяем авторизацию и отправляем данные
+    this.authenticateAndSendToSheets(justification);
     
     // Генерируем локальную оценку
     this.generateFeedback();
 }
 
-// Новая функция для отправки в Google Sheets
-async sendToGoogleSheets(justification) {
+async authenticateAndSendToSheets(justification) {
     try {
-        // Получаем имя студента
+        // Проверяем есть ли уже токен доступа
+        let accessToken = localStorage.getItem('google_access_token');
+        
+        if (!accessToken || this.isTokenExpired()) {
+            // Запускаем OAuth2 поток
+            accessToken = await this.getOAuthToken();
+        }
+        
+        if (accessToken) {
+            await this.sendToSheetsWithToken(accessToken, justification);
+        } else {
+            throw new Error('Не удалось получить токен доступа');
+        }
+        
+    } catch (error) {
+        console.error('Ошибка аутентификации:', error);
+        this.showNotification('❌ Ошибка доступа к Google Sheets');
+    }
+}
+
+// Получение OAuth2 токена
+async getOAuthToken() {
+    return new Promise((resolve, reject) => {
+        // Формируем URL для авторизации
+        const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
+        authUrl.searchParams.set('client_id', GOOGLE_OAUTH_CONFIG.clientId);
+        authUrl.searchParams.set('redirect_uri', GOOGLE_OAUTH_CONFIG.redirectUri);
+        authUrl.searchParams.set('response_type', 'token');
+        authUrl.searchParams.set('scope', GOOGLE_OAUTH_CONFIG.scope);
+        authUrl.searchParams.set('include_granted_scopes', 'true');
+        authUrl.searchParams.set('state', 'google_sheets_auth');
+
+        // Открываем окно авторизации
+        const authWindow = window.open(
+            authUrl.toString(),
+            'google-auth',
+            'width=500,height=600,scrollbars=yes,resizable=yes'
+        );
+
+        // Слушаем сообщения от окна авторизации
+        const handleMessage = (event) => {
+            if (event.origin !== window.location.origin) return;
+            
+            if (event.data.type === 'GOOGLE_AUTH_SUCCESS') {
+                const accessToken = event.data.accessToken;
+                const expiresIn = event.data.expiresIn;
+                
+                // Сохраняем токен
+                localStorage.setItem('google_access_token', accessToken);
+                localStorage.setItem('google_token_expires', Date.now() + (expiresIn * 1000));
+                
+                authWindow.close();
+                window.removeEventListener('message', handleMessage);
+                resolve(accessToken);
+            } else if (event.data.type === 'GOOGLE_AUTH_ERROR') {
+                authWindow.close();
+                window.removeEventListener('message', handleMessage);
+                reject(new Error(event.data.error));
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+
+        // Проверяем закрытие окна
+        const checkClosed = setInterval(() => {
+            if (authWindow.closed) {
+                clearInterval(checkClosed);
+                window.removeEventListener('message', handleMessage);
+                reject(new Error('Окно авторизации было закрыто'));
+            }
+        }, 1000);
+    });
+}
+
+// Проверка истечения токена
+isTokenExpired() {
+    const expiresAt = localStorage.getItem('google_token_expires');
+    return !expiresAt || Date.now() > parseInt(expiresAt);
+}
+
+// Отправка данных с токеном
+async sendToSheetsWithToken(accessToken, justification) {
+    try {
         const studentName = prompt('Введите ваше имя:') || 'Анонимный студент';
         
-        // Формируем список выбранных площадок
         const selectedPlatformsNames = this.selectedPlatforms.map(id => {
             const platform = this.data.platforms.find(p => p['п/п'] === id);
             return platform ? platform.Сайт : `Площадка ${id}`;
@@ -1166,153 +1246,51 @@ async sendToGoogleSheets(justification) {
         
         const assignmentTitle = this.data.assignments[this.currentAssignment]?.title || 'Неизвестное задание';
         
-        // Подготавливаем данные для отправки в виде строки таблицы
         const rowData = [
-            studentName,                                    // Колонка A: Имя
-            assignmentTitle,                               // Колонка B: Задание
-            selectedPlatformsNames.join(', '),             // Колонка C: Площадки
-            justification,                                 // Колонка D: Обоснование
-            new Date().toLocaleString('ru-RU')             // Колонка E: Дата
+            studentName,
+            assignmentTitle,
+            selectedPlatformsNames.join(', '),
+            justification,
+            new Date().toLocaleString('ru-RU')
         ];
 
-        // Показываем индикатор загрузки
         this.showNotification('⏳ Отправка данных...');
 
-        // Отправляем данные в Google Sheets
-        const result = await this.appendToGoogleSheets(rowData);
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_OAUTH_CONFIG.sheetId}/values/Sheet1!A:E:append?valueInputOption=RAW`;
         
-        if (result.success) {
-            console.log('Данные успешно отправлены в Google Sheets');
-            this.showNotification('✅ Ваше решение отправлено тренеру!');
-            
-            // Логируем для отладки
-            console.log('Отправленные данные:', {
-                studentName,
-                assignmentTitle,
-                platforms: selectedPlatformsNames,
-                justification,
-                timestamp: new Date().toLocaleString('ru-RU')
-            });
-        } else {
-            throw new Error(result.error || 'Неизвестная ошибка');
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                values: [rowData]
+            })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`HTTP ${response.status}: ${errorData.error?.message || 'Неизвестная ошибка'}`);
         }
-        
+
+        const responseData = await response.json();
+        console.log('Данные успешно отправлены:', responseData);
+        this.showNotification('✅ Ваше решение отправлено тренеру!');
+
     } catch (error) {
-        console.error('Ошибка отправки данных в Google Sheets:', error);
-        this.showNotification('❌ Ошибка отправки. Проверьте настройки API.');
+        console.error('Ошибка отправки:', error);
         
-        // Показываем детали ошибки для отладки
-        if (error.message.includes('API key')) {
-            console.error('Проблема с API ключом. Проверьте GOOGLE_SHEETS_CONFIG.apiKey');
-        } else if (error.message.includes('not found')) {
-            console.error('Таблица не найдена. Проверьте GOOGLE_SHEETS_CONFIG.sheetId');
+        if (error.message.includes('401')) {
+            // Токен истек, удаляем его
+            localStorage.removeItem('google_access_token');
+            localStorage.removeItem('google_token_expires');
+            this.showNotification('❌ Токен истек. Попробуйте еще раз.');
+        } else {
+            this.showNotification('❌ Ошибка отправки данных');
         }
     }
 }
- showNotification(message) {
-    // Удаляем предыдущее уведомление если есть
-    const existingNotification = document.querySelector('.custom-notification');
-    if (existingNotification) {
-        existingNotification.remove();
-    }
-
-    // Создаем новое уведомление
-    const notification = document.createElement('div');
-    notification.className = 'custom-notification';
-    
-    // Определяем тип уведомления для стилизации
-    let backgroundColor = 'var(--color-primary)';
-    if (message.includes('❌')) {
-        backgroundColor = 'var(--color-error)';
-    } else if (message.includes('⏳')) {
-        backgroundColor = 'var(--color-warning)';
-    }
-    
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: ${backgroundColor};
-        color: white;
-        padding: 1rem 1.5rem;
-        border-radius: var(--radius-base);
-        z-index: 10000;
-        box-shadow: var(--shadow-lg);
-        font-weight: var(--font-weight-medium);
-        max-width: 350px;
-        word-wrap: break-word;
-        animation: slideIn 0.3s ease-out;
-        font-size: var(--font-size-sm);
-        line-height: 1.4;
-    `;
-    notification.textContent = message;
-    
-    // Добавляем анимацию если её еще нет
-    if (!document.querySelector('#notification-styles')) {
-        const style = document.createElement('style');
-        style.id = 'notification-styles';
-        style.textContent = `
-            @keyframes slideIn {
-                from {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-            }
-            @keyframes slideOut {
-                from {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-                to {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-    }
-    
-    document.body.appendChild(notification);
-    
-    // Автоматически убираем через время (больше для ошибок)
-    const duration = message.includes('❌') ? 6000 : 4000;
-    setTimeout(() => {
-        if (notification.parentNode) {
-            notification.style.animation = 'slideOut 0.3s ease-out';
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.remove();
-                }
-            }, 300);
-        }
-    }, duration);
-}
-
-// Дополнительная функция для тестирования подключения
-async testGoogleSheetsConnection() {
-    try {
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_CONFIG.sheetId}?key=${GOOGLE_SHEETS_CONFIG.apiKey}`;
-        
-        const response = await fetch(url);
-        
-        if (response.ok) {
-            const data = await response.json();
-            console.log('✅ Подключение к Google Sheets работает');
-            console.log('Название таблицы:', data.properties.title);
-            return true;
-        } else {
-            console.error('❌ Ошибка подключения к Google Sheets:', response.status);
-            return false;
-        }
-    } catch (error) {
-        console.error('❌ Ошибка тестирования подключения:', error);
-        return false;
-    }
-}   
     // Отрисовка таблицы площадок
     renderPlatformsTable() {
         const tbody = document.getElementById('platforms-table-body');
@@ -1690,7 +1668,12 @@ async appendToGoogleSheets(rowData) {
 document.addEventListener('DOMContentLoaded', () => {
     window.mediaPlanningApp = new MediaPlanningApp();
 });
-
+const GOOGLE_OAUTH_CONFIG = {
+    clientId: '277903724790-668aaou4gfl7d43kunqev58as87lrm57.apps.googleusercontent.com',
+    redirectUri: 'https://grinsen1.github.io', // Ваш redirect URI
+    scope: 'https://www.googleapis.com/auth/spreadsheets',
+    sheetId: '1o4M7BI6R54Nd3w7MnGh8nynMrUkWv0iSEqWmUVjGJ4A'
+};
 const GOOGLE_SHEETS_CONFIG = {
     sheetId: '1o4M7BI6R54Nd3w7MnGh8nynMrUkWv0iSEqWmUVjGJ4A',  // Из URL таблицы
     apiKey: '987a0e1a9153fa2960b6d04ddcad1bc3a6246eb2',       // Из Google Cloud Console
