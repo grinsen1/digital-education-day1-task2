@@ -873,7 +873,6 @@ select.form-control {
 
 .assignment-content {
   display: grid;
-  grid-template-columns: 1fr 2fr;
   gap: var(--space-24);
 }
 
