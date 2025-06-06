@@ -1222,7 +1222,7 @@ select.form-control {
 /* Трехколоночная сетка метрик для максимальной компактности */
 .platform-metrics-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(6, 1fr);
   gap: 0.15rem;
   font-size: 0.65rem;
 }
@@ -1281,7 +1281,7 @@ select.form-control {
 /* Адаптивность - на маленьких экранах двухколоночная сетка */
 @media (max-width: 1200px) {
   .platform-metrics-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
   }
 }
 
