@@ -1693,6 +1693,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const GOOGLE_SHEETS_CONFIG = {
     sheetId: '1o4M7BI6R54Nd3w7MnGh8nynMrUkWv0iSEqWmUVjGJ4A',  // Из URL таблицы
-    apiKey: 'AIzaSyCUfQ5U8E3rvWcaiEaCp9VvTX9qwplz_C0',       // Из Google Cloud Console
+    apiKey: '987a0e1a9153fa2960b6d04ddcad1bc3a6246eb2',       // Из Google Cloud Console
     range: 'Sheet1!A:E'  // Диапазон: лист1, колонки A-E
 };
