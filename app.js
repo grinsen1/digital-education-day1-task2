@@ -1017,70 +1017,130 @@ for (const [id, value] of Object.entries(assignmentElements)) {
         });
     }
     // Отображение предпросмотра данных площадки
-showPlatformPreview(platformId) {
-    const platform = this.data.platforms.find(p => p['п/п'] === platformId);
+// Отображение предпросмотра данных всех выбранных площадок
+showPlatformPreview() {
     const previewContainer = document.getElementById('platform-preview');
     
-    if (!platform || !previewContainer) return;
+    if (!previewContainer) return;
     
-    // Форматирование процентных значений
-    const ctrFormatted = platform['CTR%'] ? (platform['CTR%'] * 100).toFixed(4) + '%' : '-';
-    const vtrFormatted = platform['VTR%'] ? (platform['VTR%'] * 100).toFixed(2) + '%' : '-';
+    // Если нет выбранных площадок, скрываем блок
+    if (this.currentAssignmentPlatforms.length === 0) {
+        previewContainer.style.display = 'none';
+        return;
+    }
     
-    previewContainer.innerHTML = `
+    let html = `
         <div class="card">
             <div class="card__header">
-                <h4>Предпросмотр данных площадки</h4>
+                <h4>Предпросмотр выбранных площадок (${this.currentAssignmentPlatforms.length})</h4>
             </div>
             <div class="card__body">
-                <div class="platform-preview-grid">
-                    <div class="preview-item">
-                        <span class="label">Площадка:</span>
-                        <span class="value">${platform.Сайт}</span>
+    `;
+    
+    // Добавляем данные по каждой выбранной площадке
+    this.currentAssignmentPlatforms.forEach((platformId, index) => {
+        const platform = this.data.platforms.find(p => p['п/п'] === platformId);
+        if (!platform) return;
+        
+        const ctrFormatted = platform['CTR%'] ? (platform['CTR%'] * 100).toFixed(4) + '%' : '-';
+        const vtrFormatted = platform['VTR%'] ? (platform['VTR%'] * 100).toFixed(2) + '%' : '-';
+        
+        html += `
+            <div style="margin-bottom: ${index < this.currentAssignmentPlatforms.length - 1 ? '2rem' : '0'}; padding-bottom: ${index < this.currentAssignmentPlatforms.length - 1 ? '1.5rem' : '0'}; border-bottom: ${index < this.currentAssignmentPlatforms.length - 1 ? '2px solid #e1e5e9' : 'none'};">
+                <h5 style="margin: 0 0 1rem 0; color: #374151; font-size: 1rem; font-weight: 600;">${platform.Сайт}</h5>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.875rem;">
+                    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid #f3f4f6;">
+                        <span style="font-weight: 500; color: #6b7280;">Формат:</span>
+                        <span style="font-weight: 600; text-align: right;">${platform.Формат}</span>
                     </div>
-                    <div class="preview-item">
-                        <span class="label">Формат:</span>
-                        <span class="value">${platform.Формат}</span>
+                    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid #f3f4f6;">
+                        <span style="font-weight: 500; color: #6b7280;">Категория:</span>
+                        <span style="font-weight: 600; text-align: right;">${platform.Категория}</span>
                     </div>
-                    <div class="preview-item">
-                        <span class="label">Категория:</span>
-                        <span class="value">${platform.Категория}</span>
+                    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid #f3f4f6;">
+                        <span style="font-weight: 500; color: #6b7280;">CPM:</span>
+                        <span style="font-weight: 600; text-align: right;">${platform.CPM ? platform.CPM.toFixed(2) + ' руб.' : '-'}</span>
                     </div>
-                    <div class="preview-item">
-                        <span class="label">CPM:</span>
-                        <span class="value">${platform.CPM ? platform.CPM.toFixed(2) + ' руб.' : '-'}</span>
+                    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid #f3f4f6;">
+                        <span style="font-weight: 500; color: #6b7280;">CTR:</span>
+                        <span style="font-weight: 600; text-align: right;">${ctrFormatted}</span>
                     </div>
-                    <div class="preview-item">
-                        <span class="label">CTR:</span>
-                        <span class="value">${ctrFormatted}</span>
+                    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid #f3f4f6;">
+                        <span style="font-weight: 500; color: #6b7280;">CPC:</span>
+                        <span style="font-weight: 600; text-align: right;">${platform.CPC ? platform.CPC.toFixed(2) + ' руб.' : '-'}</span>
                     </div>
-                    <div class="preview-item">
-                        <span class="label">CPC:</span>
-                        <span class="value">${platform.CPC ? platform.CPC.toFixed(2) + ' руб.' : '-'}</span>
+                    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid #f3f4f6;">
+                        <span style="font-weight: 500; color: #6b7280;">VTR:</span>
+                        <span style="font-weight: 600; text-align: right;">${vtrFormatted}</span>
                     </div>
-                    <div class="preview-item">
-                        <span class="label">VTR:</span>
-                        <span class="value">${vtrFormatted}</span>
+                    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid #f3f4f6;">
+                        <span style="font-weight: 500; color: #6b7280;">CPT:</span>
+                        <span style="font-weight: 600; text-align: right;">${platform.CPT ? platform.CPT.toFixed(2) + ' руб.' : '-'}</span>
                     </div>
-                    <div class="preview-item">
-                        <span class="label">CPT:</span>
-                        <span class="value">${platform.CPT ? platform.CPT.toFixed(2) + ' руб.' : '-'}</span>
+                    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid #f3f4f6;">
+                        <span style="font-weight: 500; color: #6b7280;">CPA:</span>
+                        <span style="font-weight: 600; text-align: right;">${platform.CPA ? platform.CPA.toFixed(2) + ' руб.' : '-'}</span>
                     </div>
-                    <div class="preview-item">
-                        <span class="label">CPA:</span>
-                        <span class="value">${platform.CPA ? platform.CPA.toFixed(2) + ' руб.' : '-'}</span>
-                    </div>
-                    <div class="preview-item">
-                        <span class="label">PI:</span>
-                        <span class="value">${platform.PI ? platform.PI.toFixed(3) : '-'}</span>
+                    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0;">
+                        <span style="font-weight: 500; color: #6b7280;">PI:</span>
+                        <span style="font-weight: 600; text-align: right;">${platform.PI ? platform.PI.toFixed(3) : '-'}</span>
                     </div>
                 </div>
+            </div>
+        `;
+    });
+    
+    // Добавляем итоговые метрики
+    if (this.currentAssignmentPlatforms.length > 1) {
+        const totalMetrics = this.calculateTotalMetrics();
+        html += `
+            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid #3b82f6;">
+                <h5 style="margin: 0 0 1rem 0; color: #1f2937; font-size: 1rem; font-weight: 600;">Итоговые показатели</h5>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.875rem;">
+                    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid #e5e7eb;">
+                        <span style="font-weight: 500; color: #6b7280;">Средний CPM:</span>
+                        <span style="font-weight: 600; text-align: right;">${totalMetrics.avgCPM.toFixed(2)} руб.</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid #e5e7eb;">
+                        <span style="font-weight: 500; color: #6b7280;">Средний CTR:</span>
+                        <span style="font-weight: 600; text-align: right;">${totalMetrics.avgCTR.toFixed(4)}%</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid #e5e7eb;">
+                        <span style="font-weight: 500; color: #6b7280;">Средний CPC:</span>
+                        <span style="font-weight: 600; text-align: right;">${totalMetrics.avgCPC.toFixed(2)} руб.</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0;">
+                        <span style="font-weight: 500; color: #6b7280;">Средний VTR:</span>
+                        <span style="font-weight: 600; text-align: right;">${totalMetrics.avgVTR.toFixed(2)}%</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    html += `
             </div>
         </div>
     `;
     
-    previewContainer.classList.remove('hidden');
+    previewContainer.innerHTML = html;
+    previewContainer.style.display = 'block';
 }
+
+// Вспомогательная функция для расчета итоговых метрик
+calculateTotalMetrics() {
+    const platforms = this.currentAssignmentPlatforms.map(id => 
+        this.data.platforms.find(p => p['п/п'] === id)
+    ).filter(p => p);
+    
+    const avgCPM = platforms.reduce((sum, p) => sum + (p.CPM || 0), 0) / platforms.length;
+    const avgCTR = platforms.reduce((sum, p) => sum + ((p['CTR%'] || 0) * 100), 0) / platforms.length;
+    const avgCPC = platforms.reduce((sum, p) => sum + (p.CPC || 0), 0) / platforms.length;
+    const avgVTR = platforms.reduce((sum, p) => sum + ((p['VTR%'] || 0) * 100), 0) / platforms.length;
+    
+    return { avgCPM, avgCTR, avgCPC, avgVTR };
+}
+
     // Добавление площадки в задание
     addPlatformToAssignment(platformId) {
         if (!this.currentAssignment) return;
