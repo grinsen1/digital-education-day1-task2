@@ -1674,8 +1674,3 @@ const GOOGLE_OAUTH_CONFIG = {
     scope: 'https://www.googleapis.com/auth/spreadsheets',
     sheetId: '1o4M7BI6R54Nd3w7MnGh8nynMrUkWv0iSEqWmUVjGJ4A'
 };
-const GOOGLE_SHEETS_CONFIG = {
-    sheetId: '1o4M7BI6R54Nd3w7MnGh8nynMrUkWv0iSEqWmUVjGJ4A',  // Из URL таблицы
-    apiKey: '987a0e1a9153fa2960b6d04ddcad1bc3a6246eb2',       // Из Google Cloud Console
-    range: 'Sheet1!A:E'  // Диапазон: лист1, колонки A-E
-};
