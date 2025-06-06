@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google OAuth Callback</title>
+</head>
+<body>
+    <script>
+        // Получаем токен из URL fragment
+        const urlParams = new URLSearchParams(window.location.hash.substring(1));
+        const accessToken = urlParams.get('access_token');
+        const expiresIn = urlParams.get('expires_in');
+        const error = urlParams.get('error');
+
+        if (accessToken) {
+            // Отправляем токен обратно в родительское окно
+            window.opener.postMessage({
+                type: 'GOOGLE_AUTH_SUCCESS',
+                accessToken: accessToken,
+                expiresIn: parseInt(expiresIn)
+            }, window.location.origin);
+        } else if (error) {
+            window.opener.postMessage({
+                type: 'GOOGLE_AUTH_ERROR',
+                error: error
+            }, window.location.origin);
+        }
+        
+        window.close();
+    </script>
+</body>
+</html>
