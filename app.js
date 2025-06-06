@@ -1136,252 +1136,126 @@ showPlatformPreview() {
     }
     
     // Отправка решения задания
-    submitAssignment() {
-        if (!this.currentAssignment) return;
-        
-        const assignment = this.data.assignments[this.currentAssignment];
-        const justificationElement = document.getElementById('justification');
-        const justification = justificationElement ? justificationElement.value : '';
-        
-        // Проверка заполнения всех полей
-        if (this.selectedPlatforms.length < assignment.slots) {
-            alert(`Необходимо выбрать ${assignment.slots} площадок.`);
-            return;
-        }
-        
-        if (!justification.trim()) {
-            alert('Пожалуйста, добавьте обоснование вашего выбора.');
-            return;
-        }
-        
-        // Генерируем оценку
-        this.generateFeedback();
-        
-        // Показываем обратную связь
-        const interfaceContainer = document.getElementById('assignment-interface');
-        const feedbackContainer = document.getElementById('assignment-feedback');
-        
-        if (interfaceContainer) interfaceContainer.classList.add('hidden');
-        if (feedbackContainer) feedbackContainer.classList.remove('hidden');
-    }
+  submitAssignment() {
+    const justificationElement = document.getElementById('justification');
+    const justification = justificationElement ? justificationElement.value : '';
     
-    // Генерация обратной связи по заданию
-    generateFeedback() {
-        const container = document.getElementById('feedback-content');
-        if (!container) return;
-        
-        // В зависимости от типа задания, определяем оптимальные площадки
-        let score = 0;
-        const feedback = [];
-        const selectedPlatforms = this.selectedPlatforms.map(id => 
-            this.data.platforms.find(p => p['п/п'] === id)
-        ).filter(p => p !== undefined);
-        
-        // Проверяем правильность выбора в зависимости от типа задания
-        switch(this.currentAssignment) {
-            case 'brandformance':
-                // Для Brandformance важно сочетание охвата и конверсии
-                
-                // Проверка наличия видео-форматов
-                const hasVideo = selectedPlatforms.some(p => p.Категория === 'Видео');
-                if (hasVideo) {
-                    score += 20;
-                    feedback.push({
-                        text: 'Хороший выбор! Включение видео-форматов для Brandformance-кампании повышает эффективность.',
-                        positive: true
-                    });
-                } else {
-                    feedback.push({
-                        text: 'Рекомендуется включать видео-форматы для повышения охвата и узнаваемости бренда.',
-                        positive: false
-                    });
-                }
-                
-                // Проверка наличия площадок с высоким CTR
-                const highCTRPlatforms = selectedPlatforms.filter(p => p['CTR%'] > this.data.benchmarks.CTR);
-                if (highCTRPlatforms.length >= 3) {
-                    score += 20;
-                    feedback.push({
-                        text: 'Отлично! Выбраны площадки с высоким CTR, что обеспечит качественный трафик.',
-                        positive: true
-                    });
-                }
-                
-                // Проверка наличия площадок с хорошим CPA
-                const goodCPAPlatforms = selectedPlatforms.filter(p => p.CPA < this.data.benchmarks.CPA);
-                if (goodCPAPlatforms.length >= 5) {
-                    score += 30;
-                    feedback.push({
-                        text: 'Превосходно! Большинство выбранных площадок имеют CPA ниже бенчмарка.',
-                        positive: true
-                    });
-                }
-                
-                // Проверка разнообразия категорий
-                const categories = new Set(selectedPlatforms.map(p => p.Категория));
-                if (categories.size >= 2) {
-                    score += 10;
-                    feedback.push({
-                        text: 'Хорошее разнообразие категорий площадок для охвата разных сегментов аудитории.',
-                        positive: true
-                    });
-                }
-                
-                // Проверка среднего PI
-                const avgPI = this.average(selectedPlatforms, 'PI');
-                if (avgPI > 0.35) {
-                    score += 20;
-                    feedback.push({
-                        text: `Высокий средний показатель заинтересованности (PI=${avgPI.toFixed(2)}) говорит о качестве выбранных площадок.`,
-                        positive: true
-                    });
-                }
-                
-                break;
-                
-            case 'max_traffic':
-                // Для максимизации качественного трафика важны CTR, CPC и PI
-                
-                // Проверка среднего CTR
-                const avgCTR = this.average(selectedPlatforms, 'CTR%');
-                if (avgCTR > this.data.benchmarks.CTR) {
-                    score += 30;
-                    feedback.push({
-                        text: `Отлично! Средний CTR выбранных площадок (${(avgCTR * 100).toFixed(3)}%) выше бенчмарка.`,
-                        positive: true
-                    });
-                } else {
-                    feedback.push({
-                        text: `Средний CTR выбранных площадок (${(avgCTR * 100).toFixed(3)}%) ниже бенчмарка. Рекомендуется выбирать площадки с более высоким CTR.`,
-                        positive: false
-                    });
-                }
-                
-                // Проверка среднего CPC
-                const avgCPC = this.average(selectedPlatforms, 'CPC');
-                if (avgCPC < this.data.benchmarks.CPC) {
-                    score += 30;
-                    feedback.push({
-                        text: `Хороший выбор! Средний CPC (${avgCPC.toFixed(2)} руб.) ниже бенчмарка.`,
-                        positive: true
-                    });
-                } else {
-                    feedback.push({
-                        text: `Средний CPC (${avgCPC.toFixed(2)} руб.) выше бенчмарка. Стоит обратить внимание на более эффективные площадки.`,
-                        positive: false
-                    });
-                }
-                
-                // Проверка среднего PI для качества трафика
-                const trafficPI = this.average(selectedPlatforms, 'PI');
-                if (trafficPI > 0.37) {
-                    score += 40;
-                    feedback.push({
-                        text: `Превосходно! Высокий средний показатель заинтересованности (PI=${trafficPI.toFixed(2)}) обеспечит качественный трафик.`,
-                        positive: true
-                    });
-                } else if (trafficPI > 0.33) {
-                    score += 20;
-                    feedback.push({
-                        text: `Средний показатель заинтересованности (PI=${trafficPI.toFixed(2)}) на достаточном уровне.`,
-                        positive: true
-                    });
-                }
-                
-                break;
-                
-            case 'max_reach':
-                // Для максимизации охвата важны CPM, CPT и Частота
-                
-                // Проверка среднего CPM
-                const avgCPM = this.average(selectedPlatforms, 'CPM');
-                if (avgCPM < this.data.benchmarks.CPM) {
-                    score += 30;
-                    feedback.push({
-                        text: `Отлично! Средний CPM (${avgCPM.toFixed(2)} руб.) ниже бенчмарка, что позволит получить больший охват при том же бюджете.`,
-                        positive: true
-                    });
-                } else {
-                    feedback.push({
-                        text: `Средний CPM (${avgCPM.toFixed(2)} руб.) выше бенчмарка. Рекомендуется выбирать площадки с более низким CPM для максимизации охвата.`,
-                        positive: false
-                    });
-                }
-                
-                // Проверка среднего CPT
-                const avgCPT = this.average(selectedPlatforms, 'CPT');
-                if (avgCPT < this.data.benchmarks.CPT) {
-                    score += 30;
-                    feedback.push({
-                        text: `Хороший выбор! Средний CPT (${avgCPT.toFixed(2)} руб.) ниже бенчмарка.`,
-                        positive: true
-                    });
-                }
-                
-                // Проверка на наличие площадок с низким CPM
-                const lowCPMPlatforms = selectedPlatforms.filter(p => p.CPM < 200);
-                if (lowCPMPlatforms.length >= 4) {
-                    score += 30;
-                    feedback.push({
-                        text: 'Отличная стратегия! Выбрано много площадок с низким CPM, что максимизирует охват при ограниченном бюджете.',
-                        positive: true
-                    });
-                }
-                
-                // Проверка включения социальных сетей
-                const hasSocialMedia = selectedPlatforms.some(p => p.Категория === 'Социальные сети');
-                if (hasSocialMedia) {
-                    score += 10;
-                    feedback.push({
-                        text: 'Хороший выбор! Социальные сети помогут расширить охват кампании.',
-                        positive: true
-                    });
-                }
-                
-                break;
-        }
-        
-        // Определяем итоговую оценку
-        let gradeText, gradeClass;
-        if (score >= 80) {
-            gradeText = 'Отлично';
-            gradeClass = 'score-excellent';
-        } else if (score >= 60) {
-            gradeText = 'Хорошо';
-            gradeClass = 'score-good';
-        } else {
-            gradeText = 'Требует улучшения';
-            gradeClass = 'score-poor';
-        }
-        
-        // Генерируем HTML для обратной связи
-        container.innerHTML = `
-            <div class="feedback-score">
-                <div class="score-indicator ${gradeClass}">${score}</div>
-                <h3>${gradeText}</h3>
-            </div>
-            
-            <div class="feedback-detail">
-                <h4>Анализ выбранных площадок:</h4>
-                <ul class="feedback-list">
-                    ${feedback.map(item => `
-                        <li class="${item.positive ? 'positive' : 'negative'}">
-                            ${item.text}
-                        </li>
-                    `).join('')}
-                </ul>
-            </div>
-            
-            <div class="feedback-detail">
-                <h4>Выбранные площадки:</h4>
-                <ul>
-                    ${selectedPlatforms.map(platform => `
-                        <li>${platform.Сайт} - ${platform.Формат}</li>
-                    `).join('')}
-                </ul>
-            </div>
-        `;
+    if (!justification.trim()) {
+        alert('Пожалуйста, добавьте обоснование вашего выбора.');
+        return;
     }
+
+    // Отправляем данные в Google Forms
+    this.sendToGoogleForms(justification);
+    
+    // Генерируем локальную оценку
+    this.generateFeedback();
+}
+
+// Новый метод для отправки данных в Google Forms
+sendToGoogleForms(justification) {
+    // Получаем имя студента
+    const studentName = prompt('Введите ваше имя:') || 'Анонимный студент';
+    
+    // Формируем результаты
+    const selectedPlatformsNames = this.selectedPlatforms.map(id => {
+        const platform = this.data.platforms.find(p => p['п/п'] === id);
+        return platform ? platform.Сайт : `Площадка ${id}`;
+    });
+    
+    const assignmentTitle = this.data.assignments[this.currentAssignment]?.title || 'Неизвестное задание';
+    
+    const results = `
+Задание: ${assignmentTitle}
+Выбранные площадки (${this.selectedPlatforms.length}):
+${selectedPlatformsNames.map((name, index) => `${index + 1}. ${name}`).join('\n')}
+
+Дата выполнения: ${new Date().toLocaleString('ru-RU')}
+    `.trim();
+
+    // Формируем данные для отправки
+    const formData = new FormData();
+    formData.append(GOOGLE_FORM_CONFIG.entries.name, studentName);
+    formData.append(GOOGLE_FORM_CONFIG.entries.results, results);
+    formData.append(GOOGLE_FORM_CONFIG.entries.justification, justification);
+
+    // URL для отправки данных
+    const submitURL = `https://docs.google.com/forms/d/e/${GOOGLE_FORM_CONFIG.formId}/formResponse`;
+
+    // Отправляем данные
+    fetch(submitURL, {
+        method: 'POST',
+        mode: 'no-cors', // Важно для Google Forms
+        body: formData
+    })
+    .then(() => {
+        console.log('Данные успешно отправлены в Google Forms');
+        this.showNotification('✅ Ваше решение отправлено тренеру!');
+    })
+    .catch(error => {
+        console.error('Ошибка отправки данных:', error);
+        this.showNotification('❌ Ошибка отправки. Попробуйте еще раз.');
+    });
+}
+
+// Метод для показа уведомлений
+showNotification(message) {
+    // Удаляем предыдущее уведомление если есть
+    const existingNotification = document.querySelector('.custom-notification');
+    if (existingNotification) {
+        existingNotification.remove();
+    }
+
+    // Создаем новое уведомление
+    const notification = document.createElement('div');
+    notification.className = 'custom-notification';
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--color-primary);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: var(--radius-base);
+        z-index: 10000;
+        box-shadow: var(--shadow-lg);
+        font-weight: var(--font-weight-medium);
+        max-width: 300px;
+        word-wrap: break-word;
+        animation: slideIn 0.3s ease-out;
+    `;
+    notification.textContent = message;
+    
+    // Добавляем анимацию
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    document.body.appendChild(notification);
+    
+    // Автоматически убираем через 4 секунды
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.style.animation = 'slideIn 0.3s ease-out reverse';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 300);
+        }
+    }, 4000);
+}
     
     // Отрисовка таблицы площадок
     renderPlatformsTable() {
@@ -1721,3 +1595,12 @@ showPlatformPreview() {
 document.addEventListener('DOMContentLoaded', () => {
     window.mediaPlanningApp = new MediaPlanningApp();
 });
+
+const GOOGLE_FORM_CONFIG = {
+    formId: '1Miz9JuJ5kSxJcI_tBnnMNf7dgS_nAswbQFKvZEIf0iI',
+    entries: {
+        name: 'entry.733297937',        // Замените на ваш entry ID для поля "Имя"
+        results: 'entry.1976183774',     // Замените на ваш entry ID для поля "Результаты"
+        justification: 'entry.853511655' // Замените на ваш entry ID для поля "Обоснование"
+    }
+};
