@@ -1024,20 +1024,30 @@ for (const [id, value] of Object.entries(assignmentElements)) {
 // Отображение предпросмотра данных всех выбранных площадок
 // Отображение предпросмотра данных всех выбранных площадок
 showPlatformPreview() {
-    const previewContainer = document.getElementById('platform-preview');
+    console.log('showPlatformPreview вызвана');
+    console.log('selectedPlatforms:', this.selectedPlatforms);
     
-    if (!previewContainer) return;
+    const previewContainer = document.getElementById('platform-preview');
+    console.log('previewContainer найден:', previewContainer);
+    
+    if (!previewContainer) {
+        console.error('Элемент platform-preview не найден!');
+        return;
+    }
     
     // Если нет выбранных площадок, скрываем блок
     if (this.selectedPlatforms.length === 0) {
+        console.log('Нет выбранных площадок, скрываем блок');
         previewContainer.style.display = 'none';
         return;
     }
     
+    console.log('Отображаем предпросмотр для', this.selectedPlatforms.length, 'площадок');
+    
     let html = `
         <div class="card">
             <div class="card__header">
-                <h4>Предпросмотр выбранных площадок (${this.selectedPlatforms.length})</h4>
+                <h4>Площадки: ${this.selectedPlatforms.length}</h4>
             </div>
             <div class="card__body">
     `;
@@ -1045,81 +1055,60 @@ showPlatformPreview() {
     // Добавляем данные по каждой выбранной площадке
     this.selectedPlatforms.forEach((platformId, index) => {
         const platform = this.data.platforms.find(p => p['п/п'] === platformId);
+        console.log('Обрабатываем площадку:', platform);
+        
         if (!platform) return;
         
-        const ctrFormatted = platform['CTR%'] ? (platform['CTR%'] * 100).toFixed(4) + '%' : '-';
-        const vtrFormatted = platform['VTR%'] ? (platform['VTR%'] * 100).toFixed(2) + '%' : '-';
+        const ctrFormatted = platform['CTR%'] ? (platform['CTR%'] * 100).toFixed(1) + '%' : '-';
+        const vtrFormatted = platform['VTR%'] ? (platform['VTR%'] * 100).toFixed(0) + '%' : '-';
+        
+        // Сокращаем название если слишком длинное
+        const siteName = platform.Сайт.length > 20 ? platform.Сайт.substring(0, 17) + '...' : platform.Сайт;
         
         html += `
-            <div style="margin-bottom: ${index < this.selectedPlatforms.length - 1 ? '2rem' : '0'}; padding-bottom: ${index < this.selectedPlatforms.length - 1 ? '1.5rem' : '0'}; border-bottom: ${index < this.selectedPlatforms.length - 1 ? '2px solid #e1e5e9' : 'none'};">
-                <h5 style="margin: 0 0 1rem 0; color: #374151; font-size: 1rem; font-weight: 600;">${platform.Сайт}</h5>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.875rem;">
-                    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid #f3f4f6;">
-                        <span style="font-weight: 500; color: #6b7280;">Формат:</span>
-                        <span style="font-weight: 600; text-align: right;">${platform.Формат}</span>
+            <div class="platform-preview-item">
+                <h5 title="${platform.Сайт}">${siteName}</h5>
+                <div class="platform-metrics-grid">
+                    <div class="platform-metric">
+                        <span class="label">CPM</span>
+                        <span class="value">${platform.CPM ? Math.round(platform.CPM) : '-'}</span>
                     </div>
-                    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid #f3f4f6;">
-                        <span style="font-weight: 500; color: #6b7280;">Категория:</span>
-                        <span style="font-weight: 600; text-align: right;">${platform.Категория}</span>
+                    <div class="platform-metric">
+                        <span class="label">CTR</span>
+                        <span class="value">${ctrFormatted}</span>
                     </div>
-                    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid #f3f4f6;">
-                        <span style="font-weight: 500; color: #6b7280;">CPM:</span>
-                        <span style="font-weight: 600; text-align: right;">${platform.CPM ? platform.CPM.toFixed(2) + ' руб.' : '-'}</span>
+                    <div class="platform-metric">
+                        <span class="label">CPC</span>
+                        <span class="value">${platform.CPC ? Math.round(platform.CPC) : '-'}</span>
                     </div>
-                    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid #f3f4f6;">
-                        <span style="font-weight: 500; color: #6b7280;">CTR:</span>
-                        <span style="font-weight: 600; text-align: right;">${ctrFormatted}</span>
+                    <div class="platform-metric">
+                        <span class="label">VTR</span>
+                        <span class="value">${vtrFormatted}</span>
                     </div>
-                    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid #f3f4f6;">
-                        <span style="font-weight: 500; color: #6b7280;">CPC:</span>
-                        <span style="font-weight: 600; text-align: right;">${platform.CPC ? platform.CPC.toFixed(2) + ' руб.' : '-'}</span>
+                    <div class="platform-metric">
+                        <span class="label">CPA</span>
+                        <span class="value">${platform.CPA ? Math.round(platform.CPA) : '-'}</span>
                     </div>
-                    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid #f3f4f6;">
-                        <span style="font-weight: 500; color: #6b7280;">VTR:</span>
-                        <span style="font-weight: 600; text-align: right;">${vtrFormatted}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid #f3f4f6;">
-                        <span style="font-weight: 500; color: #6b7280;">CPT:</span>
-                        <span style="font-weight: 600; text-align: right;">${platform.CPT ? platform.CPT.toFixed(2) + ' руб.' : '-'}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid #f3f4f6;">
-                        <span style="font-weight: 500; color: #6b7280;">CPA:</span>
-                        <span style="font-weight: 600; text-align: right;">${platform.CPA ? platform.CPA.toFixed(2) + ' руб.' : '-'}</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0;">
-                        <span style="font-weight: 500; color: #6b7280;">PI:</span>
-                        <span style="font-weight: 600; text-align: right;">${platform.PI ? platform.PI.toFixed(3) : '-'}</span>
+                    <div class="platform-metric">
+                        <span class="label">PI</span>
+                        <span class="value">${platform.PI ? platform.PI.toFixed(2) : '-'}</span>
                     </div>
                 </div>
             </div>
         `;
     });
     
- 
-    
+
     html += `
             </div>
         </div>
     `;
     
+    console.log('Устанавливаем HTML:', html);
     previewContainer.innerHTML = html;
     previewContainer.style.display = 'block';
+    console.log('Предпросмотр должен быть видим');
 }
-
-// Вспомогательная функция для расчета итоговых метрик
-calculateTotalMetrics() {
-    const platforms = this.selectedPlatforms.map(id => 
-        this.data.platforms.find(p => p['п/п'] === id)
-    ).filter(p => p);
-    
-    const avgCPM = platforms.reduce((sum, p) => sum + (p.CPM || 0), 0) / platforms.length;
-    const avgCTR = platforms.reduce((sum, p) => sum + ((p['CTR%'] || 0) * 100), 0) / platforms.length;
-    const avgCPC = platforms.reduce((sum, p) => sum + (p.CPC || 0), 0) / platforms.length;
-    const avgVTR = platforms.reduce((sum, p) => sum + ((p['VTR%'] || 0) * 100), 0) / platforms.length;
-    
-    return { avgCPM, avgCTR, avgCPC, avgVTR };
-}
-
 
     // Добавление площадки в задание
     addPlatformToAssignment(platformId) {
