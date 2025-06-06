@@ -1158,6 +1158,7 @@ calculateTotalMetrics() {
             this.selectedPlatforms.push(platformId);
             this.renderPlatformSlots();
             this.fillPlatformSelect();
+            this.showPlatformPreview(); 
         } else {
             alert(`Вы не можете выбрать больше ${assignment.slots} площадок.`);
         }
