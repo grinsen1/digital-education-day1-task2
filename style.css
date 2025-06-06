@@ -1155,7 +1155,7 @@ select.form-control {
 /* Стили для сетки workspace */
 .assignment-workspace-grid {
   display: grid;
-  grid-template-columns: 3fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 2rem;
 }
 
@@ -1318,7 +1318,7 @@ select.form-control {
 
 @media (max-width: 1024px) {
   .assignment-workspace-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
   }
   
   .platform-preview-sidebar {
@@ -1337,7 +1337,7 @@ select.form-control {
 /* Дополнительные стили для больших экранов */
 @media (min-width: 1400px) {
   .assignment-workspace-grid {
-    grid-template-columns: 4fr 1fr;
+    grid-template-columns: 1fr 1fr;
   }
   
   .selected-platforms {
