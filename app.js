@@ -1067,7 +1067,7 @@ showPlatformPreview() {
         
         html += `
             <div class="platform-preview-item">
-                <h5 title="${platform.Сайт}">${siteName}</h5>
+                <h5 title="${platform.Сайт}">${siteName}-${platform.Формат}</h5>
                 <div class="platform-metrics-grid">
                     <div class="platform-metric">
                         <span class="label">CPM</span>
