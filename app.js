@@ -1231,23 +1231,7 @@ async sendToGoogleAppsScript(justification) {
     }
 }
 
-        const responseData = await response.json();
-        console.log('Данные успешно отправлены:', responseData);
-        this.showNotification('✅ Ваше решение отправлено тренеру!');
 
-    } catch (error) {
-        console.error('Ошибка отправки:', error);
-        
-        if (error.message.includes('401')) {
-            // Токен истек, удаляем его
-            localStorage.removeItem('google_access_token');
-            localStorage.removeItem('google_token_expires');
-            this.showNotification('❌ Токен истек. Попробуйте еще раз.');
-        } else {
-            this.showNotification('❌ Ошибка отправки данных');
-        }
-    }
-}
     // Отрисовка таблицы площадок
     renderPlatformsTable() {
         const tbody = document.getElementById('platforms-table-body');
