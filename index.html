@@ -175,86 +175,186 @@
 
             <!-- Секция Задания -->
             <section id="assignments" class="section">
-                <h2 class="section-title">Практические задания</h2>
-                
-                <div class="assignments-list" id="assignment-list-container">
-                    <!-- Список заданий будет добавлен динамически -->
-                </div>
-                
-                <div id="assignment-interface" class="assignment-interface hidden">
-                    <div class="flex gap-8 items-center mb-8">
-                        <button id="back-to-assignments" class="btn btn--secondary">← Назад к заданиям</button>
-                        <h3 id="current-assignment-title">Название задания</h3>
+              <section id="assignments" class="section">
+    <h2 class="section-title">Практические задания</h2>
+    
+    <!-- Скрытые блоки справочной информации -->
+    <div class="assignment-help-blocks mb-8">
+        <details class="help-block">
+            <summary class="help-summary">
+                <h3>Основные понятия и метрики</h3>
+            </summary>
+            <div class="help-content">
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <h4>CPM (Cost Per Mille)</h4>
+                        <p>Стоимость тысячи показов рекламы. Основная метрика для закупки рекламы.</p>
+                        <p>Бенчмарк: <span class="benchmark" id="cpm-benchmark-assignments"></span> руб.</p>
                     </div>
-
-                    <div class="assignment-content">
-                        <div class="assignment-brief">
-                            <div class="card">
-                                <div class="card__header">
-                                    <h3>Описание задания</h3>
-                                </div>
-                                <div class="card__body">
-                                    <p id="assignment-description"></p>
-                                    <p id="assignment-slots"></p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="assignment-workspace">
-                            <div class="card">
-                                <div class="card__header">
-                                    <h3>Выбор площадок</h3>
-                                </div>
-                                <div class="card__body">
-                                    <div id="selected-platforms" class="selected-platforms">
-                                        <!-- Слоты для выбранных площадок -->
-                                    </div>
-
-                                    <div class="platform-selector mt-8">
-                                        <div class="form-group">
-                                            <label for="platform-select" class="form-label">Добавить площадку:</label>
-                                            <select id="platform-select" class="form-control">
-                                                <option value="">Выберите площадку</option>
-                                                <!-- Список площадок будет добавлен динамически -->
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="card mt-8">
-                                <div class="card__header">
-                                    <h3>Обоснование выбора</h3>
-                                </div>
-                                <div class="card__body">
-                                    <div class="form-group">
-                                        <label for="justification" class="form-label">Объясните ваш выбор площадок:</label>
-                                        <textarea id="justification" class="form-control" rows="4" placeholder="Опишите, почему вы выбрали именно эти площадки для решения задания..."></textarea>
-                                    </div>
-                                    <button id="submit-assignment" class="btn btn--primary mt-8">Отправить решение</button>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="metric-item">
+                        <h4>CTR (Click-Through Rate)</h4>
+                        <p>Показатель кликабельности рекламы. Отношение числа кликов к показам.</p>
+                        <p>Бенчмарк: <span class="benchmark" id="ctr-benchmark-assignments"></span>%</p>
+                    </div>
+                    <div class="metric-item">
+                        <h4>CPC (Cost Per Click)</h4>
+                        <p>Стоимость одного клика по рекламе.</p>
+                        <p>Бенчмарк: <span class="benchmark" id="cpc-benchmark-assignments"></span> руб.</p>
+                    </div>
+                    <div class="metric-item">
+                        <h4>CPV (Cost Per View)</h4>
+                        <p>Стоимость одного просмотра видео-рекламы.</p>
+                        <p>Относительный показатель, зависит от CPM и VTR.</p>
+                    </div>
+                    <div class="metric-item">
+                        <h4>VTR (View-Through Rate)</h4>
+                        <p>Показатель досмотров видео-рекламы до конца.</p>
+                        <p>Бенчмарк: <span class="benchmark" id="vtr-benchmark-assignments"></span>%</p>
+                    </div>
+                    <div class="metric-item">
+                        <h4>CPT (Cost Per Thousand)</h4>
+                        <p>Стоимость тысячи контактов с учетом частоты.</p>
+                        <p>Бенчмарк: <span class="benchmark" id="cpt-benchmark-assignments"></span> руб.</p>
+                    </div>
+                    <div class="metric-item">
+                        <h4>CPA (Cost Per Action)</h4>
+                        <p>Стоимость целевого действия на сайте.</p>
+                        <p>Бенчмарк: <span class="benchmark" id="cpa-benchmark-assignments"></span> руб.</p>
+                    </div>
+                    <div class="metric-item">
+                        <h4>PI (Page Interest)</h4>
+                        <p>Индекс заинтересованности страницей. Оценивает качество трафика.</p>
+                        <p>Чем выше значение, тем выше качество целевого трафика.</p>
                     </div>
                 </div>
+            </div>
+        </details>
 
-                <div id="assignment-feedback" class="assignment-feedback hidden">
+        <details class="help-block">
+            <summary class="help-summary">
+                <h3>Рекомендации по выбору площадок</h3>
+            </summary>
+            <div class="help-content">
+                <div class="format-grid">
+                    <div class="format-item">
+                        <h4>Видео-реклама</h4>
+                        <p><strong>Преимущества:</strong> Высокая вовлеченность, эмоциональное воздействие</p>
+                        <p><strong>Когда использовать:</strong> Для повышения узнаваемости бренда, запуска новых продуктов</p>
+                        <p><strong>Ключевые метрики:</strong> VTR, CPV, охват, частота</p>
+                    </div>
+                    <div class="format-item">
+                        <h4>Баннерная реклама</h4>
+                        <p><strong>Преимущества:</strong> Широкий охват, низкая стоимость</p>
+                        <p><strong>Когда использовать:</strong> Для охватных кампаний, ремаркетинга</p>
+                        <p><strong>Ключевые метрики:</strong> CPM, CTR, CPC, частота</p>
+                    </div>
+                    <div class="format-item">
+                        <h4>Социальные сети</h4>
+                        <p><strong>Преимущества:</strong> Точный таргетинг, высокая вовлеченность</p>
+                        <p><strong>Когда использовать:</strong> Для привлечения аудитории с определенными интересами</p>
+                        <p><strong>Ключевые метрики:</strong> CPM, CTR, CPC, CPA, охват</p>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <h4>Лучшие практики:</h4>
+                    <ul class="best-practices">
+                        <li>Для максимизации охвата выбирайте площадки с низким CPM и высокой аудиторией</li>
+                        <li>Для качественного трафика на сайт выбирайте площадки с высоким CTR и низким CPC</li>
+                        <li>Для Brandformance (охват + конверсия) используйте комбинацию видео и баннерной рекламы</li>
+                        <li>Всегда сравнивайте показатели площадок с бенчмарками для принятия решений</li>
+                    </ul>
+                </div>
+            </div>
+        </details>
+    </div>
+    
+    <div class="assignments-list" id="assignment-list-container">
+        <!-- Список заданий будет добавлен динамически -->
+    </div>
+    
+    <div id="assignment-interface" class="assignment-interface hidden">
+        <div class="flex gap-8 items-center mb-8">
+            <button id="back-to-assignments" class="btn btn--secondary">← Назад к заданиям</button>
+            <h3 id="current-assignment-title">Название задания</h3>
+        </div>
+
+        <div class="assignment-content">
+            <div class="assignment-brief">
+                <div class="card">
+                    <div class="card__header">
+                        <h3>Описание задания</h3>
+                    </div>
+                    <div class="card__body">
+                        <p id="assignment-description"></p>
+                        <p id="assignment-slots"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="assignment-workspace-grid">
+                <div class="assignment-workspace">
                     <div class="card">
                         <div class="card__header">
-                            <h3>Результаты выполнения задания</h3>
+                            <h3>Выбор площадок</h3>
                         </div>
                         <div class="card__body">
-                            <div id="feedback-content">
-                                <!-- Здесь будет обратная связь -->
+                            <div id="selected-platforms" class="selected-platforms">
+                                <!-- Слоты для выбранных площадок -->
                             </div>
-                            <div class="flex gap-8 mt-8">
-                                <button id="retry-assignment" class="btn btn--secondary">Попробовать еще раз</button>
-                                <button id="back-to-assignments-from-feedback" class="btn btn--primary">К списку заданий</button>
+
+                            <div class="platform-selector mt-8">
+                                <div class="form-group">
+                                    <label for="platform-select" class="form-label">Добавить площадку:</label>
+                                    <select id="platform-select" class="form-control" size="15">
+                                        <option value="">Выберите площадку</option>
+                                        <!-- Список площадок будет добавлен динамически -->
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
+
+                    <div class="card mt-8">
+                        <div class="card__header">
+                            <h3>Обоснование выбора</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="form-group">
+                                <label for="justification" class="form-label">Объясните ваш выбор площадок:</label>
+                                <textarea id="justification" class="form-control" rows="4" placeholder="Опишите, почему вы выбрали именно эти площадки для решения задания..."></textarea>
+                            </div>
+                            <button id="submit-assignment" class="btn btn--primary mt-8">Отправить решение</button>
+                        </div>
+                    </div>
                 </div>
-            </section>
+
+                <div class="platform-preview-sidebar">
+                    <div id="platform-preview" class="hidden">
+                        <!-- Предпросмотр данных площадки -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="assignment-feedback" class="assignment-feedback hidden">
+        <div class="card">
+            <div class="card__header">
+                <h3>Результаты выполнения задания</h3>
+            </div>
+            <div class="card__body">
+                <div id="feedback-content">
+                    <!-- Здесь будет обратная связь -->
+                </div>
+                <div class="flex gap-8 mt-8">
+                    <button id="retry-assignment" class="btn btn--secondary">Попробовать еще раз</button>
+                    <button id="back-to-assignments-from-feedback" class="btn btn--primary">К списку заданий</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
             <!-- Секция База данных -->
             <section id="database" class="section">
