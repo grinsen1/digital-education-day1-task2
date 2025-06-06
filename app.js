@@ -513,19 +513,19 @@ class MediaPlanningApp {
                     "title": "Максимизация охвата и конверсии (Brandformance)",
                     "description": "Определить наиболее релевантные площадки и каналы с точки зрения соответствия цели с учетом бенчмарков",
                     "fields": ["Номер п/п", "Площадка", "Формат"],
-                    "slots": 10
+                    "slots": 15
                 },
                 "max_traffic": {
                     "title": "Максимизация качественного трафика на сайт",
                     "description": "Определить наиболее релевантные площадки и каналы с точки зрения соответствия цели с учетом бенчмарков",
                     "fields": ["Номер п/п", "Площадка", "Формат"],
-                    "slots": 5
+                    "slots": 15
                 },
                 "max_reach": {
                     "title": "Максимизация охвата с минимальной ценой",
                     "description": "Определить наиболее релевантные площадки и каналы для достижения максимального охвата при ограниченном бюджете",
                     "fields": ["Номер п/п", "Площадка", "Формат"],
-                    "slots": 7
+                    "slots": 15
                 }
             }
         };
@@ -639,11 +639,13 @@ class MediaPlanningApp {
         
         // Выбор площадки в задании
         const platformSelect = document.getElementById('platform-select');
+      
         if (platformSelect) {
             platformSelect.addEventListener('change', (e) => {
                 const platformId = e.target.value;
                 if (platformId) {
                     this.addPlatformToAssignment(parseInt(platformId));
+                    this.showPlatformPreview(parseInt(platformId));
                     e.target.value = '';
                 }
             });
@@ -998,7 +1000,71 @@ class MediaPlanningApp {
             }
         });
     }
+    // Отображение предпросмотра данных площадки
+showPlatformPreview(platformId) {
+    const platform = this.data.platforms.find(p => p['п/п'] === platformId);
+    const previewContainer = document.getElementById('platform-preview');
     
+    if (!platform || !previewContainer) return;
+    
+    // Форматирование процентных значений
+    const ctrFormatted = platform['CTR%'] ? (platform['CTR%'] * 100).toFixed(4) + '%' : '-';
+    const vtrFormatted = platform['VTR%'] ? (platform['VTR%'] * 100).toFixed(2) + '%' : '-';
+    
+    previewContainer.innerHTML = `
+        <div class="card">
+            <div class="card__header">
+                <h4>Предпросмотр данных площадки</h4>
+            </div>
+            <div class="card__body">
+                <div class="platform-preview-grid">
+                    <div class="preview-item">
+                        <span class="label">Площадка:</span>
+                        <span class="value">${platform.Сайт}</span>
+                    </div>
+                    <div class="preview-item">
+                        <span class="label">Формат:</span>
+                        <span class="value">${platform.Формат}</span>
+                    </div>
+                    <div class="preview-item">
+                        <span class="label">Категория:</span>
+                        <span class="value">${platform.Категория}</span>
+                    </div>
+                    <div class="preview-item">
+                        <span class="label">CPM:</span>
+                        <span class="value">${platform.CPM ? platform.CPM.toFixed(2) + ' руб.' : '-'}</span>
+                    </div>
+                    <div class="preview-item">
+                        <span class="label">CTR:</span>
+                        <span class="value">${ctrFormatted}</span>
+                    </div>
+                    <div class="preview-item">
+                        <span class="label">CPC:</span>
+                        <span class="value">${platform.CPC ? platform.CPC.toFixed(2) + ' руб.' : '-'}</span>
+                    </div>
+                    <div class="preview-item">
+                        <span class="label">VTR:</span>
+                        <span class="value">${vtrFormatted}</span>
+                    </div>
+                    <div class="preview-item">
+                        <span class="label">CPT:</span>
+                        <span class="value">${platform.CPT ? platform.CPT.toFixed(2) + ' руб.' : '-'}</span>
+                    </div>
+                    <div class="preview-item">
+                        <span class="label">CPA:</span>
+                        <span class="value">${platform.CPA ? platform.CPA.toFixed(2) + ' руб.' : '-'}</span>
+                    </div>
+                    <div class="preview-item">
+                        <span class="label">PI:</span>
+                        <span class="value">${platform.PI ? platform.PI.toFixed(3) : '-'}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    previewContainer.classList.remove('hidden');
+}
     // Добавление площадки в задание
     addPlatformToAssignment(platformId) {
         if (!this.currentAssignment) return;
