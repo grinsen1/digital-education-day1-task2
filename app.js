@@ -640,16 +640,16 @@ class MediaPlanningApp {
         // Выбор площадки в задании
         const platformSelect = document.getElementById('platform-select');
       
-        if (platformSelect) {
-            platformSelect.addEventListener('change', (e) => {
-                const platformId = e.target.value;
-                if (platformId) {
-                    this.addPlatformToAssignment(parseInt(platformId));
-                    this.showPlatformPreview(parseInt(platformId));
-                    e.target.value = '';
-                }
-            });
+       if (platformSelect) {
+    platformSelect.addEventListener('change', (e) => {
+        const platformId = e.target.value;
+        if (platformId) {
+            this.addPlatformToAssignment(parseInt(platformId));
+            this.showPlatformPreview(); // Убираем параметр, теперь показываем все
+            e.target.value = '';
         }
+    });
+}
     }
     
     // Инициализация интерфейса
@@ -912,6 +912,7 @@ for (const [id, value] of Object.entries(assignmentElements)) {
         
         // Заполняем селект с площадками
         this.fillPlatformSelect();
+        this.showPlatformPreview();
     }
     
     // Скрыть интерфейс выполнения задания
@@ -926,6 +927,7 @@ for (const [id, value] of Object.entries(assignmentElements)) {
         
         this.currentAssignment = null;
         this.selectedPlatforms = [];
+        this.showPlatformPreview();
     }
     
     // Скрыть интерфейс обратной связи
@@ -947,6 +949,8 @@ for (const [id, value] of Object.entries(assignmentElements)) {
         
         this.renderPlatformSlots();
         this.fillPlatformSelect();
+        this.showPlatformPreview();
+
     }
     
     // Отрисовка слотов для выбора площадок
@@ -1018,13 +1022,14 @@ for (const [id, value] of Object.entries(assignmentElements)) {
     }
     // Отображение предпросмотра данных площадки
 // Отображение предпросмотра данных всех выбранных площадок
+// Отображение предпросмотра данных всех выбранных площадок
 showPlatformPreview() {
     const previewContainer = document.getElementById('platform-preview');
     
     if (!previewContainer) return;
     
     // Если нет выбранных площадок, скрываем блок
-    if (this.currentAssignmentPlatforms.length === 0) {
+    if (this.selectedPlatforms.length === 0) {
         previewContainer.style.display = 'none';
         return;
     }
@@ -1032,13 +1037,13 @@ showPlatformPreview() {
     let html = `
         <div class="card">
             <div class="card__header">
-                <h4>Предпросмотр выбранных площадок (${this.currentAssignmentPlatforms.length})</h4>
+                <h4>Предпросмотр выбранных площадок (${this.selectedPlatforms.length})</h4>
             </div>
             <div class="card__body">
     `;
     
     // Добавляем данные по каждой выбранной площадке
-    this.currentAssignmentPlatforms.forEach((platformId, index) => {
+    this.selectedPlatforms.forEach((platformId, index) => {
         const platform = this.data.platforms.find(p => p['п/п'] === platformId);
         if (!platform) return;
         
@@ -1046,7 +1051,7 @@ showPlatformPreview() {
         const vtrFormatted = platform['VTR%'] ? (platform['VTR%'] * 100).toFixed(2) + '%' : '-';
         
         html += `
-            <div style="margin-bottom: ${index < this.currentAssignmentPlatforms.length - 1 ? '2rem' : '0'}; padding-bottom: ${index < this.currentAssignmentPlatforms.length - 1 ? '1.5rem' : '0'}; border-bottom: ${index < this.currentAssignmentPlatforms.length - 1 ? '2px solid #e1e5e9' : 'none'};">
+            <div style="margin-bottom: ${index < this.selectedPlatforms.length - 1 ? '2rem' : '0'}; padding-bottom: ${index < this.selectedPlatforms.length - 1 ? '1.5rem' : '0'}; border-bottom: ${index < this.selectedPlatforms.length - 1 ? '2px solid #e1e5e9' : 'none'};">
                 <h5 style="margin: 0 0 1rem 0; color: #374151; font-size: 1rem; font-weight: 600;">${platform.Сайт}</h5>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.875rem;">
                     <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid #f3f4f6;">
@@ -1091,7 +1096,7 @@ showPlatformPreview() {
     });
     
     // Добавляем итоговые метрики
-    if (this.currentAssignmentPlatforms.length > 1) {
+    if (this.selectedPlatforms.length > 1) {
         const totalMetrics = this.calculateTotalMetrics();
         html += `
             <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid #3b82f6;">
@@ -1129,7 +1134,7 @@ showPlatformPreview() {
 
 // Вспомогательная функция для расчета итоговых метрик
 calculateTotalMetrics() {
-    const platforms = this.currentAssignmentPlatforms.map(id => 
+    const platforms = this.selectedPlatforms.map(id => 
         this.data.platforms.find(p => p['п/п'] === id)
     ).filter(p => p);
     
@@ -1140,6 +1145,7 @@ calculateTotalMetrics() {
     
     return { avgCPM, avgCTR, avgCPC, avgVTR };
 }
+
 
     // Добавление площадки в задание
     addPlatformToAssignment(platformId) {
@@ -1162,6 +1168,7 @@ calculateTotalMetrics() {
         this.selectedPlatforms.splice(index, 1);
         this.renderPlatformSlots();
         this.fillPlatformSelect();
+        this.showPlatformPreview();
     }
     
     // Отправка решения задания
