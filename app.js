@@ -1095,33 +1095,7 @@ showPlatformPreview() {
         `;
     });
     
-    // Добавляем итоговые метрики
-    if (this.selectedPlatforms.length > 1) {
-        const totalMetrics = this.calculateTotalMetrics();
-        html += `
-            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid #3b82f6;">
-                <h5 style="margin: 0 0 1rem 0; color: #1f2937; font-size: 1rem; font-weight: 600;">Итоговые показатели</h5>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.875rem;">
-                    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid #e5e7eb;">
-                        <span style="font-weight: 500; color: #6b7280;">Средний CPM:</span>
-                        <span style="font-weight: 600; text-align: right;">${totalMetrics.avgCPM.toFixed(2)} руб.</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid #e5e7eb;">
-                        <span style="font-weight: 500; color: #6b7280;">Средний CTR:</span>
-                        <span style="font-weight: 600; text-align: right;">${totalMetrics.avgCTR.toFixed(4)}%</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0; border-bottom: 1px solid #e5e7eb;">
-                        <span style="font-weight: 500; color: #6b7280;">Средний CPC:</span>
-                        <span style="font-weight: 600; text-align: right;">${totalMetrics.avgCPC.toFixed(2)} руб.</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; padding: 0.25rem 0;">
-                        <span style="font-weight: 500; color: #6b7280;">Средний VTR:</span>
-                        <span style="font-weight: 600; text-align: right;">${totalMetrics.avgVTR.toFixed(2)}%</span>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
+ 
     
     html += `
             </div>
