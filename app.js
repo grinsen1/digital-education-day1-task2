@@ -1145,100 +1145,19 @@ submitAssignment() {
         return;
     }
 
-    // Проверяем авторизацию и отправляем данные
-    this.authenticateAndSendToSheets(justification);
+    // Отправляем данные через Google Apps Script
+    this.sendToGoogleAppsScript(justification);
     
     // Генерируем локальную оценку
     this.generateFeedback();
 }
 
-async authenticateAndSendToSheets(justification) {
+async sendToGoogleAppsScript(justification) {
     try {
-        // Проверяем есть ли уже токен доступа
-        let accessToken = localStorage.getItem('google_access_token');
-        
-        if (!accessToken || this.isTokenExpired()) {
-            // Запускаем OAuth2 поток
-            accessToken = await this.getOAuthToken();
-        }
-        
-        if (accessToken) {
-            await this.sendToSheetsWithToken(accessToken, justification);
-        } else {
-            throw new Error('Не удалось получить токен доступа');
-        }
-        
-    } catch (error) {
-        console.error('Ошибка аутентификации:', error);
-        this.showNotification('❌ Ошибка доступа к Google Sheets');
-    }
-}
-
-// Получение OAuth2 токена
-async getOAuthToken() {
-    return new Promise((resolve, reject) => {
-        // Формируем URL для авторизации
-        const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
-        authUrl.searchParams.set('client_id', GOOGLE_OAUTH_CONFIG.clientId);
-        authUrl.searchParams.set('redirect_uri', GOOGLE_OAUTH_CONFIG.redirectUri);
-        authUrl.searchParams.set('response_type', 'token');
-        authUrl.searchParams.set('scope', GOOGLE_OAUTH_CONFIG.scope);
-        authUrl.searchParams.set('include_granted_scopes', 'true');
-        authUrl.searchParams.set('state', 'google_sheets_auth');
-
-        // Открываем окно авторизации
-        const authWindow = window.open(
-            authUrl.toString(),
-            'google-auth',
-            'width=500,height=600,scrollbars=yes,resizable=yes'
-        );
-
-        // Слушаем сообщения от окна авторизации
-        const handleMessage = (event) => {
-            if (event.origin !== window.location.origin) return;
-            
-            if (event.data.type === 'GOOGLE_AUTH_SUCCESS') {
-                const accessToken = event.data.accessToken;
-                const expiresIn = event.data.expiresIn;
-                
-                // Сохраняем токен
-                localStorage.setItem('google_access_token', accessToken);
-                localStorage.setItem('google_token_expires', Date.now() + (expiresIn * 1000));
-                
-                authWindow.close();
-                window.removeEventListener('message', handleMessage);
-                resolve(accessToken);
-            } else if (event.data.type === 'GOOGLE_AUTH_ERROR') {
-                authWindow.close();
-                window.removeEventListener('message', handleMessage);
-                reject(new Error(event.data.error));
-            }
-        };
-
-        window.addEventListener('message', handleMessage);
-
-        // Проверяем закрытие окна
-        const checkClosed = setInterval(() => {
-            if (authWindow.closed) {
-                clearInterval(checkClosed);
-                window.removeEventListener('message', handleMessage);
-                reject(new Error('Окно авторизации было закрыто'));
-            }
-        }, 1000);
-    });
-}
-
-// Проверка истечения токена
-isTokenExpired() {
-    const expiresAt = localStorage.getItem('google_token_expires');
-    return !expiresAt || Date.now() > parseInt(expiresAt);
-}
-
-// Отправка данных с токеном
-async sendToSheetsWithToken(accessToken, justification) {
-    try {
+        // Получаем имя студента
         const studentName = prompt('Введите ваше имя:') || 'Анонимный студент';
         
+        // Формируем список выбранных площадок
         const selectedPlatformsNames = this.selectedPlatforms.map(id => {
             const platform = this.data.platforms.find(p => p['п/п'] === id);
             return platform ? platform.Сайт : `Площадка ${id}`;
@@ -1246,33 +1165,71 @@ async sendToSheetsWithToken(accessToken, justification) {
         
         const assignmentTitle = this.data.assignments[this.currentAssignment]?.title || 'Неизвестное задание';
         
-        const rowData = [
-            studentName,
-            assignmentTitle,
-            selectedPlatformsNames.join(', '),
-            justification,
-            new Date().toLocaleString('ru-RU')
-        ];
+        // Подготавливаем данные для отправки
+        const submissionData = {
+            studentName: studentName,
+            assignmentTitle: assignmentTitle,
+            selectedPlatforms: selectedPlatformsNames.join(', '),
+            justification: justification,
+            timestamp: new Date().toLocaleString('ru-RU'),
+            // Дополнительные данные для аналитики
+            userAgent: navigator.userAgent,
+            platformCount: this.selectedPlatforms.length
+        };
 
-        this.showNotification('⏳ Отправка данных...');
+        // Показываем индикатор загрузки
+        this.showNotification('⏳ Отправка данных тренеру...');
 
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_OAUTH_CONFIG.sheetId}/values/Sheet1!A:E:append?valueInputOption=RAW`;
-        
-        const response = await fetch(url, {
+        // Отправляем данные
+        const response = await fetch(GOOGLE_APPS_SCRIPT_CONFIG.webAppUrl, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${accessToken}`,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                values: [rowData]
-            })
+            body: JSON.stringify(submissionData)
         });
 
+        // Проверяем ответ
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`HTTP ${response.status}: ${errorData.error?.message || 'Неизвестная ошибка'}`);
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+
+        const result = await response.json();
+        
+        if (result.success) {
+            console.log('Данные успешно отправлены:', result);
+            this.showNotification('✅ Ваше решение отправлено тренеру!');
+            
+            // Логируем успешную отправку
+            console.log('Отправленные данные:', submissionData);
+            console.log('Ответ сервера:', result);
+        } else {
+            throw new Error(result.error || result.message || 'Неизвестная ошибка сервера');
+        }
+        
+    } catch (error) {
+        console.error('Ошибка отправки данных:', error);
+        
+        // Показываем конкретную ошибку
+        let errorMessage = '❌ Ошибка отправки';
+        if (error.message.includes('Failed to fetch')) {
+            errorMessage += ': Проблема с сетью';
+        } else if (error.message.includes('HTTP error')) {
+            errorMessage += ': Ошибка сервера';
+        } else {
+            errorMessage += ': ' + error.message;
+        }
+        
+        this.showNotification(errorMessage);
+        
+        // Предлагаем альтернативу
+        setTimeout(() => {
+            if (confirm('Не удалось отправить данные автоматически. Хотите скопировать данные для ручной отправки?')) {
+                this.copyDataToClipboard(justification);
+            }
+        }, 2000);
+    }
+}
 
         const responseData = await response.json();
         console.log('Данные успешно отправлены:', responseData);
@@ -1668,9 +1625,24 @@ async appendToGoogleSheets(rowData) {
 document.addEventListener('DOMContentLoaded', () => {
     window.mediaPlanningApp = new MediaPlanningApp();
 });
-const GOOGLE_OAUTH_CONFIG = {
-    clientId: '277903724790-668aaou4gfl7d43kunqev58as87lrm57.apps.googleusercontent.com',
-    redirectUri: 'https://grinsen1.github.io', // Ваш redirect URI
-    scope: 'https://www.googleapis.com/auth/spreadsheets',
-    sheetId: '1o4M7BI6R54Nd3w7MnGh8nynMrUkWv0iSEqWmUVjGJ4A'
-};
+
+async testGoogleAppsScript() {
+    try {
+        const response = await fetch(GOOGLE_APPS_SCRIPT_CONFIG.webAppUrl, {
+            method: 'GET'
+        });
+        
+        if (response.ok) {
+            const text = await response.text();
+            console.log('✅ Google Apps Script работает:', text);
+            this.showNotification('✅ Подключение к серверу работает');
+            return true;
+        } else {
+            throw new Error(`HTTP ${response.status}`);
+        }
+    } catch (error) {
+        console.error('❌ Ошибка подключения:', error);
+        this.showNotification('❌ Ошибка подключения к серверу');
+        return false;
+    }
+}
