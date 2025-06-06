@@ -670,7 +670,23 @@ class MediaPlanningApp {
                 element.textContent = value;
             }
         }
-        
+        // Добавить после существующего цикла for (const [id, value] of Object.entries(elements)):
+// Заполняем бенчмарки в разделе заданий
+const assignmentElements = {
+    'cpm-benchmark-assignments': this.data.benchmarks.CPM,
+    'ctr-benchmark-assignments': (this.data.benchmarks.CTR * 100).toFixed(4),
+    'cpc-benchmark-assignments': this.data.benchmarks.CPC,
+    'vtr-benchmark-assignments': (this.data.benchmarks.VTR * 100).toFixed(2),
+    'cpt-benchmark-assignments': this.data.benchmarks.CPT,
+    'cpa-benchmark-assignments': this.data.benchmarks.CPA
+};
+
+for (const [id, value] of Object.entries(assignmentElements)) {
+    const element = document.getElementById(id);
+    if (element) {
+        element.textContent = value;
+    }
+}
         // Инициализация графика метрик с задержкой для корректной загрузки
         setTimeout(() => {
             this.initMetricsChart();
