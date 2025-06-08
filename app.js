@@ -1231,7 +1231,7 @@ class MediaPlanningApp {
                 }
             }, 2000);
         }
-    },
+    }
 
     // Функция для копирования данных в буфер обмена (резервный вариант)
     copyDataToClipboard(justification) {
