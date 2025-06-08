@@ -1,4 +1,7 @@
-// Приложение для обучения диджитал-медиапланированию
+// Конфигурация Google Apps Script (добавьте в начало файла)
+const GOOGLE_APPS_SCRIPT_CONFIG = {
+    webAppUrl: 'https://script.google.com/macros/s/AKfycbwoFtwHReL2MFghjX1poXhXosGnYKqtXgQDm612J1JfRYARrd4p6BonImoorAtnhvH0/exec'
+};
 
 class MediaPlanningApp {
     constructor() {
@@ -640,16 +643,16 @@ class MediaPlanningApp {
         // Выбор площадки в задании
         const platformSelect = document.getElementById('platform-select');
       
-       if (platformSelect) {
-    platformSelect.addEventListener('change', (e) => {
-        const platformId = e.target.value;
-        if (platformId) {
-            this.addPlatformToAssignment(parseInt(platformId));
-            this.showPlatformPreview(); // Убираем параметр, теперь показываем все
-            e.target.value = '';
+        if (platformSelect) {
+            platformSelect.addEventListener('change', (e) => {
+                const platformId = e.target.value;
+                if (platformId) {
+                    this.addPlatformToAssignment(parseInt(platformId));
+                    this.showPlatformPreview(); // Убираем параметр, теперь показываем все
+                    e.target.value = '';
+                }
+            });
         }
-    });
-}
     }
     
     // Инициализация интерфейса
@@ -670,23 +673,24 @@ class MediaPlanningApp {
                 element.textContent = value;
             }
         }
-        // Добавить после существующего цикла for (const [id, value] of Object.entries(elements)):
-// Заполняем бенчмарки в разделе заданий
-const assignmentElements = {
-    'cpm-benchmark-assignments': this.data.benchmarks.CPM,
-    'ctr-benchmark-assignments': (this.data.benchmarks.CTR * 100).toFixed(4),
-    'cpc-benchmark-assignments': this.data.benchmarks.CPC,
-    'vtr-benchmark-assignments': (this.data.benchmarks.VTR * 100).toFixed(2),
-    'cpt-benchmark-assignments': this.data.benchmarks.CPT,
-    'cpa-benchmark-assignments': this.data.benchmarks.CPA
-};
-
-for (const [id, value] of Object.entries(assignmentElements)) {
-    const element = document.getElementById(id);
-    if (element) {
-        element.textContent = value;
-    }
-}
+        
+        // Заполняем бенчмарки в разделе заданий
+        const assignmentElements = {
+            'cpm-benchmark-assignments': this.data.benchmarks.CPM,
+            'ctr-benchmark-assignments': (this.data.benchmarks.CTR * 100).toFixed(4),
+            'cpc-benchmark-assignments': this.data.benchmarks.CPC,
+            'vtr-benchmark-assignments': (this.data.benchmarks.VTR * 100).toFixed(2),
+            'cpt-benchmark-assignments': this.data.benchmarks.CPT,
+            'cpa-benchmark-assignments': this.data.benchmarks.CPA
+        };
+        
+        for (const [id, value] of Object.entries(assignmentElements)) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = value;
+            }
+        }
+        
         // Инициализация графика метрик с задержкой для корректной загрузки
         setTimeout(() => {
             this.initMetricsChart();
@@ -950,7 +954,6 @@ for (const [id, value] of Object.entries(assignmentElements)) {
         this.renderPlatformSlots();
         this.fillPlatformSelect();
         this.showPlatformPreview();
-
     }
     
     // Отрисовка слотов для выбора площадок
@@ -1020,95 +1023,93 @@ for (const [id, value] of Object.entries(assignmentElements)) {
             }
         });
     }
-    // Отображение предпросмотра данных площадки
-// Отображение предпросмотра данных всех выбранных площадок
-// Отображение предпросмотра данных всех выбранных площадок
-showPlatformPreview() {
-    console.log('showPlatformPreview вызвана');
-    console.log('selectedPlatforms:', this.selectedPlatforms);
-    
-    const previewContainer = document.getElementById('platform-preview');
-    console.log('previewContainer найден:', previewContainer);
-    
-    if (!previewContainer) {
-        console.error('Элемент platform-preview не найден!');
-        return;
-    }
-    
-    // Если нет выбранных площадок, скрываем блок
-    if (this.selectedPlatforms.length === 0) {
-        console.log('Нет выбранных площадок, скрываем блок');
-        previewContainer.style.display = 'none';
-        return;
-    }
-    
-    console.log('Отображаем предпросмотр для', this.selectedPlatforms.length, 'площадок');
-    
-    let html = `
-        <div class="card">
-            <div class="card__header">
-                <h4>Площадки: ${this.selectedPlatforms.length}</h4>
-            </div>
-            <div class="card__body">
-    `;
-    
-    // Добавляем данные по каждой выбранной площадке
-    this.selectedPlatforms.forEach((platformId, index) => {
-        const platform = this.data.platforms.find(p => p['п/п'] === platformId);
-        console.log('Обрабатываем площадку:', platform);
+
+    // Отображение предпросмотра данных всех выбранных площадок
+    showPlatformPreview() {
+        console.log('showPlatformPreview вызвана');
+        console.log('selectedPlatforms:', this.selectedPlatforms);
         
-        if (!platform) return;
+        const previewContainer = document.getElementById('platform-preview');
+        console.log('previewContainer найден:', previewContainer);
         
-        const ctrFormatted = platform['CTR%'] ? (platform['CTR%'] * 100).toFixed(1) + '%' : '-';
-        const vtrFormatted = platform['VTR%'] ? (platform['VTR%'] * 100).toFixed(0) + '%' : '-';
+        if (!previewContainer) {
+            console.error('Элемент platform-preview не найден!');
+            return;
+        }
         
-        // Сокращаем название если слишком длинное
-        const siteName = platform.Сайт;
+        // Если нет выбранных площадок, скрываем блок
+        if (this.selectedPlatforms.length === 0) {
+            console.log('Нет выбранных площадок, скрываем блок');
+            previewContainer.style.display = 'none';
+            return;
+        }
+        
+        console.log('Отображаем предпросмотр для', this.selectedPlatforms.length, 'площадок');
+        
+        let html = `
+            <div class="card">
+                <div class="card__header">
+                    <h4>Площадки: ${this.selectedPlatforms.length}</h4>
+                </div>
+                <div class="card__body">
+        `;
+        
+        // Добавляем данные по каждой выбранной площадке
+        this.selectedPlatforms.forEach((platformId, index) => {
+            const platform = this.data.platforms.find(p => p['п/п'] === platformId);
+            console.log('Обрабатываем площадку:', platform);
+            
+            if (!platform) return;
+            
+            const ctrFormatted = platform['CTR%'] ? (platform['CTR%'] * 100).toFixed(1) + '%' : '-';
+            const vtrFormatted = platform['VTR%'] ? (platform['VTR%'] * 100).toFixed(0) + '%' : '-';
+            
+            // Сокращаем название если слишком длинное
+            const siteName = platform.Сайт;
+            
+            html += `
+                <div class="platform-preview-item">
+                    <h5 title="${platform.Сайт}">${siteName}-${platform.Формат}</h5>
+                    <div class="platform-metrics-grid">
+                        <div class="platform-metric">
+                            <span class="label">CPM</span>
+                            <span class="value">${platform.CPM ? Math.round(platform.CPM) : '-'}</span>
+                        </div>
+                        <div class="platform-metric">
+                            <span class="label">CTR</span>
+                            <span class="value">${ctrFormatted}</span>
+                        </div>
+                        <div class="platform-metric">
+                            <span class="label">CPC</span>
+                            <span class="value">${platform.CPC ? Math.round(platform.CPC) : '-'}</span>
+                        </div>
+                        <div class="platform-metric">
+                            <span class="label">VTR</span>
+                            <span class="value">${vtrFormatted}</span>
+                        </div>
+                        <div class="platform-metric">
+                            <span class="label">CPA</span>
+                            <span class="value">${platform.CPA ? Math.round(platform.CPA) : '-'}</span>
+                        </div>
+                        <div class="platform-metric">
+                            <span class="label">PI</span>
+                            <span class="value">${platform.PI ? platform.PI.toFixed(2) : '-'}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
         
         html += `
-            <div class="platform-preview-item">
-                <h5 title="${platform.Сайт}">${siteName}-${platform.Формат}</h5>
-                <div class="platform-metrics-grid">
-                    <div class="platform-metric">
-                        <span class="label">CPM</span>
-                        <span class="value">${platform.CPM ? Math.round(platform.CPM) : '-'}</span>
-                    </div>
-                    <div class="platform-metric">
-                        <span class="label">CTR</span>
-                        <span class="value">${ctrFormatted}</span>
-                    </div>
-                    <div class="platform-metric">
-                        <span class="label">CPC</span>
-                        <span class="value">${platform.CPC ? Math.round(platform.CPC) : '-'}</span>
-                    </div>
-                    <div class="platform-metric">
-                        <span class="label">VTR</span>
-                        <span class="value">${vtrFormatted}</span>
-                    </div>
-                    <div class="platform-metric">
-                        <span class="label">CPA</span>
-                        <span class="value">${platform.CPA ? Math.round(platform.CPA) : '-'}</span>
-                    </div>
-                    <div class="platform-metric">
-                        <span class="label">PI</span>
-                        <span class="value">${platform.PI ? platform.PI.toFixed(2) : '-'}</span>
-                    </div>
                 </div>
             </div>
         `;
-    });
-    
-
-    html += `
-            </div>
-        </div>
-    `;
-    
-    console.log('Устанавливаем HTML:', html);
-    previewContainer.innerHTML = html;
-    previewContainer.style.display = 'block';
-    console.log('Предпросмотр должен быть видим');
-}
+        
+        console.log('Устанавливаем HTML:', html);
+        previewContainer.innerHTML = html;
+        previewContainer.style.display = 'block';
+        console.log('Предпросмотр должен быть видим');
+    }
 
     // Добавление площадки в задание
     addPlatformToAssignment(platformId) {
@@ -1136,29 +1137,106 @@ showPlatformPreview() {
     }
     
     // Отправка решения задания
-submitAssignment() {
-    const justificationElement = document.getElementById('justification');
-    const justification = justificationElement ? justificationElement.value : '';
-    
-    if (!justification.trim()) {
-        alert('Пожалуйста, добавьте обоснование вашего выбора.');
-        return;
-    }
+    submitAssignment() {
+        const justificationElement = document.getElementById('justification');
+        const justification = justificationElement ? justificationElement.value : '';
+        
+        if (!justification.trim()) {
+            alert('Пожалуйста, добавьте обоснование вашего выбора.');
+            return;
+        }
 
-    // Отправляем данные через Google Apps Script
-    this.sendToGoogleAppsScript(justification);
-    
-    // Генерируем локальную оценку
-    this.generateFeedback();
-}
+        // Отправляем данные через Google Apps Script
+        this.sendToGoogleAppsScript(justification);
+        
+        // Генерируем локальную оценку
+        this.generateFeedback();
+    },
 
-// Новая функция для отправки через Google Apps Script
-async sendToGoogleAppsScript(justification) {
-    try {
-        // Получаем имя студента
+    // Новая функция для отправки через Google Apps Script
+    async sendToGoogleAppsScript(justification) {
+        try {
+            // Получаем имя студента
+            const studentName = prompt('Введите ваше имя:') || 'Анонимный студент';
+            
+            // Формируем список выбранных площадок
+            const selectedPlatformsNames = this.selectedPlatforms.map(id => {
+                const platform = this.data.platforms.find(p => p['п/п'] === id);
+                return platform ? platform.Сайт : `Площадка ${id}`;
+            });
+            
+            const assignmentTitle = this.data.assignments[this.currentAssignment]?.title || 'Неизвестное задание';
+            
+            // Подготавливаем данные для отправки
+            const submissionData = {
+                studentName: studentName,
+                assignmentTitle: assignmentTitle,
+                selectedPlatforms: selectedPlatformsNames.join(', '),
+                justification: justification,
+                timestamp: new Date().toLocaleString('ru-RU'),
+                // Дополнительные данные для аналитики
+                userAgent: navigator.userAgent,
+                platformCount: this.selectedPlatforms.length
+            };
+
+            // Показываем индикатор загрузки
+            this.showNotification('⏳ Отправка данных тренеру...');
+
+            // Отправляем данные
+            const response = await fetch(GOOGLE_APPS_SCRIPT_CONFIG.webAppUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(submissionData)
+            });
+
+            // Проверяем ответ
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            
+            if (result.success) {
+                console.log('Данные успешно отправлены:', result);
+                this.showNotification('✅ Ваше решение отправлено тренеру!');
+                
+                // Логируем успешную отправку
+                console.log('Отправленные данные:', submissionData);
+                console.log('Ответ сервера:', result);
+            } else {
+                throw new Error(result.error || result.message || 'Неизвестная ошибка сервера');
+            }
+            
+        } catch (error) {
+            console.error('Ошибка отправки данных:', error);
+            
+            // Показываем конкретную ошибку
+            let errorMessage = '❌ Ошибка отправки';
+            if (error.message.includes('Failed to fetch')) {
+                errorMessage += ': Проблема с сетью';
+            } else if (error.message.includes('HTTP error')) {
+                errorMessage += ': Ошибка сервера';
+            } else {
+                errorMessage += ': ' + error.message;
+            }
+            
+            this.showNotification(errorMessage);
+            
+            // Предлагаем альтернативу
+            setTimeout(() => {
+                if (confirm('Не удалось отправить данные автоматически. Хотите скопировать данные для ручной отправки?')) {
+                    this.copyDataToClipboard(justification);
+                }
+            }, 2000);
+        }
+    },
+
+    // Функция для копирования данных в буфер обмена (резервный вариант)
+    copyDataToClipboard(justification) {
         const studentName = prompt('Введите ваше имя:') || 'Анонимный студент';
         
-        // Формируем список выбранных площадок
         const selectedPlatformsNames = this.selectedPlatforms.map(id => {
             const platform = this.data.platforms.find(p => p['п/п'] === id);
             return platform ? platform.Сайт : `Площадка ${id}`;
@@ -1166,99 +1244,127 @@ async sendToGoogleAppsScript(justification) {
         
         const assignmentTitle = this.data.assignments[this.currentAssignment]?.title || 'Неизвестное задание';
         
-        // Подготавливаем данные для отправки
-        const submissionData = {
-            studentName: studentName,
-            assignmentTitle: assignmentTitle,
-            selectedPlatforms: selectedPlatformsNames.join(', '),
-            justification: justification,
-            timestamp: new Date().toLocaleString('ru-RU'),
-            // Дополнительные данные для аналитики
-            userAgent: navigator.userAgent,
-            platformCount: this.selectedPlatforms.length
-        };
-
-        // Показываем индикатор загрузки
-        this.showNotification('⏳ Отправка данных тренеру...');
-
-        // Отправляем данные
-        const response = await fetch(GOOGLE_APPS_SCRIPT_CONFIG.webAppUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(submissionData)
+        const textData = `
+    Студент: ${studentName}
+    Задание: ${assignmentTitle}
+    Выбранные площадки: ${selectedPlatformsNames.join(', ')}
+    Обоснование: ${justification}
+    Дата: ${new Date().toLocaleString('ru-RU')}
+        `.trim();
+        
+        navigator.clipboard.writeText(textData).then(() => {
+            this.showNotification('📋 Данные скопированы в буфер обмена');
+        }).catch(() => {
+            alert('Данные для отправки тренеру:\n\n' + textData);
         });
+    },
 
-        // Проверяем ответ
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+    // Функция для показа уведомлений
+    showNotification(message) {
+        // Удаляем предыдущее уведомление если есть
+        const existingNotification = document.querySelector('.custom-notification');
+        if (existingNotification) {
+            existingNotification.remove();
         }
 
-        const result = await response.json();
+        // Создаем новое уведомление
+        const notification = document.createElement('div');
+        notification.className = 'custom-notification';
         
-        if (result.success) {
-            console.log('Данные успешно отправлены:', result);
-            this.showNotification('✅ Ваше решение отправлено тренеру!');
-            
-            // Логируем успешную отправку
-            console.log('Отправленные данные:', submissionData);
-            console.log('Ответ сервера:', result);
-        } else {
-            throw new Error(result.error || result.message || 'Неизвестная ошибка сервера');
+        // Определяем тип уведомления для стилизации
+        let backgroundColor = 'var(--color-primary)';
+        if (message.includes('❌')) {
+            backgroundColor = 'var(--color-error)';
+        } else if (message.includes('⏳')) {
+            backgroundColor = 'var(--color-warning)';
         }
         
-    } catch (error) {
-        console.error('Ошибка отправки данных:', error);
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${backgroundColor};
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-base);
+            z-index: 10000;
+            box-shadow: var(--shadow-lg);
+            font-weight: var(--font-weight-medium);
+            max-width: 350px;
+            word-wrap: break-word;
+            animation: slideIn 0.3s ease-out;
+            font-size: var(--font-size-sm);
+            line-height: 1.4;
+        `;
+        notification.textContent = message;
         
-        // Показываем конкретную ошибку
-        let errorMessage = '❌ Ошибка отправки';
-        if (error.message.includes('Failed to fetch')) {
-            errorMessage += ': Проблема с сетью';
-        } else if (error.message.includes('HTTP error')) {
-            errorMessage += ': Ошибка сервера';
-        } else {
-            errorMessage += ': ' + error.message;
+        // Добавляем анимацию если её еще нет
+        if (!document.querySelector('#notification-styles')) {
+            const style = document.createElement('style');
+            style.id = 'notification-styles';
+            style.textContent = `
+                @keyframes slideIn {
+                    from {
+                        transform: translateX(100%);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+                @keyframes slideOut {
+                    from {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                    to {
+                        transform: translateX(100%);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
         }
         
-        this.showNotification(errorMessage);
+        document.body.appendChild(notification);
         
-        // Предлагаем альтернативу
+        // Автоматически убираем через время (больше для ошибок)
+        const duration = message.includes('❌') ? 6000 : 4000;
         setTimeout(() => {
-            if (confirm('Не удалось отправить данные автоматически. Хотите скопировать данные для ручной отправки?')) {
-                this.copyDataToClipboard(justification);
+            if (notification.parentNode) {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 300);
             }
-        }, 2000);
-    }
-}
+        }, duration);
+    },
 
-// Функция для копирования данных в буфер обмена (резервный вариант)
-copyDataToClipboard(justification) {
-    const studentName = prompt('Введите ваше имя:') || 'Анонимный студент';
+    // Функция для тестирования подключения к Google Apps Script
+    async testGoogleAppsScript() {
+        try {
+            const response = await fetch(GOOGLE_APPS_SCRIPT_CONFIG.webAppUrl, {
+                method: 'GET'
+            });
+            
+            if (response.ok) {
+                const text = await response.text();
+                console.log('✅ Google Apps Script работает:', text);
+                this.showNotification('✅ Подключение к серверу работает');
+                return true;
+            } else {
+                throw new Error(`HTTP ${response.status}`);
+            }
+        } catch (error) {
+            console.error('❌ Ошибка подключения:', error);
+            this.showNotification('❌ Ошибка подключения к серверу');
+            return false;
+        }
+    },
     
-    const selectedPlatformsNames = this.selectedPlatforms.map(id => {
-        const platform = this.data.platforms.find(p => p['п/п'] === id);
-        return platform ? platform.Сайт : `Площадка ${id}`;
-    });
-    
-    const assignmentTitle = this.data.assignments[this.currentAssignment]?.title || 'Неизвестное задание';
-    
-    const textData = `
-Студент: ${studentName}
-Задание: ${assignmentTitle}
-Выбранные площадки: ${selectedPlatformsNames.join(', ')}
-Обоснование: ${justification}
-Дата: ${new Date().toLocaleString('ru-RU')}
-    `.trim();
-    
-    navigator.clipboard.writeText(textData).then(() => {
-        this.showNotification('📋 Данные скопированы в буфер обмена');
-    }).catch(() => {
-        alert('Данные для отправки тренеру:\n\n' + textData);
-    });
-}
-
-
     // Отрисовка таблицы площадок
     renderPlatformsTable() {
         const tbody = document.getElementById('platforms-table-body');
@@ -1313,7 +1419,7 @@ copyDataToClipboard(justification) {
                 this.initComparisonChart();
             });
         });
-    }
+    },
     
     // Инициализация графика сравнения площадок
     initComparisonChart() {
@@ -1406,7 +1512,7 @@ copyDataToClipboard(justification) {
         
         // Обновляем список выбранных площадок
         this.updateSelectedPlatformsList();
-    }
+    },
     
     // Нормализация значения (от 0 до 1, где 1 - лучшее значение)
     normalizeValue(value, field, data) {
@@ -1416,7 +1522,7 @@ copyDataToClipboard(justification) {
         
         if (max === min) return 0.5;
         return (value - min) / (max - min);
-    }
+    },
     
     // Нормализация инвертированного значения (от 0 до 1, где 0 - лучшее значение)
     normalizeInvertedValue(value, field, data) {
@@ -1426,7 +1532,7 @@ copyDataToClipboard(justification) {
         
         if (max === min) return 0.5;
         return 1 - ((value - min) / (max - min));
-    }
+    },
     
     // Получение RGB цвета по индексу
     getColorRGB(index) {
@@ -1441,7 +1547,7 @@ copyDataToClipboard(justification) {
         ];
         
         return colors[index % colors.length];
-    }
+    },
     
     // Обновление списка выбранных для сравнения площадок
     updateSelectedPlatformsList() {
@@ -1479,7 +1585,7 @@ copyDataToClipboard(justification) {
             
             container.appendChild(tag);
         });
-    }
+    },
     
     // Фильтрация таблицы площадок
     filterPlatformsTable() {
@@ -1508,7 +1614,7 @@ copyDataToClipboard(justification) {
         }
         
         this.renderFilteredPlatforms(filteredPlatforms);
-    }
+    },
     
     // Отрисовка отфильтрованных площадок
     renderFilteredPlatforms(platforms) {
@@ -1563,47 +1669,8 @@ copyDataToClipboard(justification) {
                 this.initComparisonChart();
             });
         });
-    }
-async appendToGoogleSheets(rowData) {
-    try {
-        // Формируем URL для API запроса
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_CONFIG.sheetId}/values/${GOOGLE_SHEETS_CONFIG.range}:append?valueInputOption=RAW&key=${GOOGLE_SHEETS_CONFIG.apiKey}`;
-        
-        // Подготавливаем тело запроса
-        const requestBody = {
-            values: [rowData]  // Массив строк для добавления
-        };
-        
-        // Выполняем запрос к Google Sheets API
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestBody)
-        });
-        
-        // Проверяем ответ
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`HTTP ${response.status}: ${errorData.error?.message || 'Неизвестная ошибка API'}`);
-        }
-        
-        const responseData = await response.json();
-        
-        return {
-            success: true,
-            data: responseData,
-            updatedRows: responseData.updates?.updatedRows || 1
-        };
-        
-    } catch (error) {
-        return {
-            success: false,
-            error: error.message
-        };
-    }
-}    
+    },
+    
     // Сортировка таблицы площадок
     sortPlatformsTable() {
         const sortField = document.getElementById('sort-field');
@@ -1629,6 +1696,13 @@ async appendToGoogleSheets(rowData) {
         });
         
         this.renderFilteredPlatforms(sortedPlatforms);
+    },
+
+    // Генерация обратной связи по заданию
+    generateFeedback() {
+        // Существующий код функции generateFeedback остается без изменений
+        // (добавьте остальную часть функции если её нет)
+        console.log('Генерация обратной связи...');
     }
 }
 
@@ -1636,24 +1710,3 @@ async appendToGoogleSheets(rowData) {
 document.addEventListener('DOMContentLoaded', () => {
     window.mediaPlanningApp = new MediaPlanningApp();
 });
-
-async testGoogleAppsScript() {
-    try {
-        const response = await fetch(GOOGLE_APPS_SCRIPT_CONFIG.webAppUrl, {
-            method: 'GET'
-        });
-        
-        if (response.ok) {
-            const text = await response.text();
-            console.log('✅ Google Apps Script работает:', text);
-            this.showNotification('✅ Подключение к серверу работает');
-            return true;
-        } else {
-            throw new Error(`HTTP ${response.status}`);
-        }
-    } catch (error) {
-        console.error('❌ Ошибка подключения:', error);
-        this.showNotification('❌ Ошибка подключения к серверу');
-        return false;
-    }
-}
