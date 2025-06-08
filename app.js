@@ -1156,7 +1156,16 @@ class MediaPlanningApp {
   // Обновленная функция для отправки через Google Apps Script
 async sendToGoogleAppsScript(justification) {
     try {
-        const studentName = prompt('Введите ваше имя:') || 'Анонимный студент';
+        // Получаем имя из поля формы вместо prompt
+        const studentNameElement = document.getElementById('student-name');
+        const studentName = studentNameElement ? studentNameElement.value.trim() : '';
+        
+        // Проверяем что имя заполнено
+        if (!studentName) {
+            alert('Пожалуйста, введите ваше имя.');
+            studentNameElement?.focus();
+            return;
+        }
         
         const selectedPlatformsNames = this.selectedPlatforms.map(id => {
             const platform = this.data.platforms.find(p => p['п/п'] === id);
@@ -1176,14 +1185,13 @@ async sendToGoogleAppsScript(justification) {
 
         this.showNotification('⏳ Отправка данных тренеру...');
 
-        // ИСПРАВЛЕННЫЕ параметры fetch для избежания CORS ошибок
         const response = await fetch(GOOGLE_APPS_SCRIPT_CONFIG.webAppUrl, {
             method: 'POST',
             headers: {
-                'Content-Type': 'text/plain', // ← ИЗМЕНЕНО: избегаем preflight запроса
+                'Content-Type': 'text/plain',
             },
-            body: JSON.stringify(submissionData), // Данные все равно в JSON формате
-            mode: 'cors', // ← Явно указываем CORS режим
+            body: JSON.stringify(submissionData),
+            mode: 'cors',
             cache: 'no-cache'
         });
 
@@ -1215,7 +1223,6 @@ async sendToGoogleAppsScript(justification) {
         
         this.showNotification(errorMessage);
         
-        // Предлагаем альтернативу
         setTimeout(() => {
             if (confirm('Не удалось отправить данные автоматически. Хотите скопировать данные для ручной отправки?')) {
                 this.copyDataToClipboard(justification);
@@ -1223,6 +1230,7 @@ async sendToGoogleAppsScript(justification) {
         }, 2000);
     }
 }
+
 
     // Функция для копирования данных в буфер обмена (резервный вариант)
     copyDataToClipboard(justification) {
