@@ -1341,7 +1341,7 @@ class MediaPlanningApp {
                 }, 300);
             }
         }, duration);
-    },
+    }
 
     // Функция для тестирования подключения к Google Apps Script
     async testGoogleAppsScript() {
@@ -1363,7 +1363,7 @@ class MediaPlanningApp {
             this.showNotification('❌ Ошибка подключения к серверу');
             return false;
         }
-    },
+    }
     
     // Отрисовка таблицы площадок
     renderPlatformsTable() {
@@ -1419,7 +1419,7 @@ class MediaPlanningApp {
                 this.initComparisonChart();
             });
         });
-    },
+    }
     
     // Инициализация графика сравнения площадок
     initComparisonChart() {
@@ -1512,7 +1512,7 @@ class MediaPlanningApp {
         
         // Обновляем список выбранных площадок
         this.updateSelectedPlatformsList();
-    },
+    }
     
     // Нормализация значения (от 0 до 1, где 1 - лучшее значение)
     normalizeValue(value, field, data) {
@@ -1522,7 +1522,7 @@ class MediaPlanningApp {
         
         if (max === min) return 0.5;
         return (value - min) / (max - min);
-    },
+    }
     
     // Нормализация инвертированного значения (от 0 до 1, где 0 - лучшее значение)
     normalizeInvertedValue(value, field, data) {
@@ -1532,7 +1532,7 @@ class MediaPlanningApp {
         
         if (max === min) return 0.5;
         return 1 - ((value - min) / (max - min));
-    },
+    }
     
     // Получение RGB цвета по индексу
     getColorRGB(index) {
@@ -1547,7 +1547,7 @@ class MediaPlanningApp {
         ];
         
         return colors[index % colors.length];
-    },
+    }
     
     // Обновление списка выбранных для сравнения площадок
     updateSelectedPlatformsList() {
@@ -1585,7 +1585,7 @@ class MediaPlanningApp {
             
             container.appendChild(tag);
         });
-    },
+    }
     
     // Фильтрация таблицы площадок
     filterPlatformsTable() {
@@ -1614,7 +1614,7 @@ class MediaPlanningApp {
         }
         
         this.renderFilteredPlatforms(filteredPlatforms);
-    },
+    }
     
     // Отрисовка отфильтрованных площадок
     renderFilteredPlatforms(platforms) {
@@ -1669,7 +1669,7 @@ class MediaPlanningApp {
                 this.initComparisonChart();
             });
         });
-    },
+    }
     
     // Сортировка таблицы площадок
     sortPlatformsTable() {
@@ -1696,7 +1696,7 @@ class MediaPlanningApp {
         });
         
         this.renderFilteredPlatforms(sortedPlatforms);
-    },
+    }
 
     // Генерация обратной связи по заданию
     generateFeedback() {
