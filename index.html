@@ -315,19 +315,38 @@
 </div>
                     </div>
 
-                    <div class="card mt-8">
-                        <div class="card__header">
-                            <h3>Обоснование выбора</h3>
-                        </div>
-                        <div class="card__body">
-                            <div class="form-group">
-                                <label for="justification" class="form-label">Объясните ваш выбор площадок:</label>
-                                <textarea id="justification" class="form-control" rows="4" placeholder="Опишите, почему вы выбрали именно эти площадки для решения задания..."></textarea>
-                            </div>
-                            <button id="submit-assignment" class="btn btn--primary mt-8">Отправить решение</button>
-                        </div>
-                    </div>
-                </div>
+                   <div class="card mt-8">
+    <div class="card__header">
+        <h3>Информация о группе и обоснование</h3>
+    </div>
+    <div class="card__body">
+        <div class="form-group">
+            <label for="student-name" class="form-label">Ваше имя:</label>
+            <input 
+                type="text" 
+                id="student-name" 
+                name="student-name"
+                class="form-control" 
+                placeholder="Введите ваше имя"
+                required
+            >
+        </div>
+        
+        <div class="form-group">
+            <label for="justification" class="form-label">Объясните ваш выбор площадок:</label>
+            <textarea 
+                id="justification" 
+                name="justification"
+                class="form-control" 
+                rows="4" 
+                placeholder="Опишите, почему вы выбрали именно эти площадки для решения задания..."
+                required
+            ></textarea>
+        </div>
+        
+        <button id="submit-assignment" class="btn btn--primary mt-8">Отправить решение</button>
+    </div>
+</div>
 
               <div class="platform-preview-sidebar">
     <div id="platform-preview" style="display: none;">
