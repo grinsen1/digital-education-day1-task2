@@ -1151,7 +1151,7 @@ class MediaPlanningApp {
         
         // Генерируем локальную оценку
         this.generateFeedback();
-    },
+    }
 
     // Новая функция для отправки через Google Apps Script
     async sendToGoogleAppsScript(justification) {
