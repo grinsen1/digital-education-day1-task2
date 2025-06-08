@@ -1257,7 +1257,7 @@ class MediaPlanningApp {
         }).catch(() => {
             alert('Данные для отправки тренеру:\n\n' + textData);
         });
-    },
+    }
 
     // Функция для показа уведомлений
     showNotification(message) {
