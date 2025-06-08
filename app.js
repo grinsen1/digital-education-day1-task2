@@ -1,6 +1,6 @@
 // Конфигурация Google Apps Script (добавьте в начало файла)
 const GOOGLE_APPS_SCRIPT_CONFIG = {
-    webAppUrl: 'https://script.google.com/macros/s/AKfycbwoFtwHReL2MFghjX1poXhXosGnYKqtXgQDm612J1JfRYARrd4p6BonImoorAtnhvH0/exec'
+    webAppUrl: 'https://script.google.com/macros/s/AKfycbwMovyBbJ4-Tn2Mw9mpnoROzzW2cDI62c4b_zUjlIQAq5Y_0ZAQYVDsSCfT50Z3VmZ4/exec'
 };
 
 class MediaPlanningApp {
