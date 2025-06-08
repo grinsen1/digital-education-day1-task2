@@ -1153,85 +1153,76 @@ class MediaPlanningApp {
         this.generateFeedback();
     }
 
-    // Новая функция для отправки через Google Apps Script
-    async sendToGoogleAppsScript(justification) {
-        try {
-            // Получаем имя студента
-            const studentName = prompt('Введите ваше имя:') || 'Анонимный студент';
-            
-            // Формируем список выбранных площадок
-            const selectedPlatformsNames = this.selectedPlatforms.map(id => {
-                const platform = this.data.platforms.find(p => p['п/п'] === id);
-                return platform ? platform.Сайт : `Площадка ${id}`;
-            });
-            
-            const assignmentTitle = this.data.assignments[this.currentAssignment]?.title || 'Неизвестное задание';
-            
-            // Подготавливаем данные для отправки
-            const submissionData = {
-                studentName: studentName,
-                assignmentTitle: assignmentTitle,
-                selectedPlatforms: selectedPlatformsNames.join(', '),
-                justification: justification,
-                timestamp: new Date().toLocaleString('ru-RU'),
-                // Дополнительные данные для аналитики
-                userAgent: navigator.userAgent,
-                platformCount: this.selectedPlatforms.length
-            };
+  // Обновленная функция для отправки через Google Apps Script
+async sendToGoogleAppsScript(justification) {
+    try {
+        const studentName = prompt('Введите ваше имя:') || 'Анонимный студент';
+        
+        const selectedPlatformsNames = this.selectedPlatforms.map(id => {
+            const platform = this.data.platforms.find(p => p['п/п'] === id);
+            return platform ? platform.Сайт : `Площадка ${id}`;
+        });
+        
+        const assignmentTitle = this.data.assignments[this.currentAssignment]?.title || 'Неизвестное задание';
+        
+        const submissionData = {
+            studentName: studentName,
+            assignmentTitle: assignmentTitle,
+            selectedPlatforms: selectedPlatformsNames.join(', '),
+            justification: justification,
+            timestamp: new Date().toLocaleString('ru-RU'),
+            platformCount: this.selectedPlatforms.length
+        };
 
-            // Показываем индикатор загрузки
-            this.showNotification('⏳ Отправка данных тренеру...');
+        this.showNotification('⏳ Отправка данных тренеру...');
 
-            // Отправляем данные
-            const response = await fetch(GOOGLE_APPS_SCRIPT_CONFIG.webAppUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(submissionData)
-            });
+        // ИСПРАВЛЕННЫЕ параметры fetch для избежания CORS ошибок
+        const response = await fetch(GOOGLE_APPS_SCRIPT_CONFIG.webAppUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain', // ← ИЗМЕНЕНО: избегаем preflight запроса
+            },
+            body: JSON.stringify(submissionData), // Данные все равно в JSON формате
+            mode: 'cors', // ← Явно указываем CORS режим
+            cache: 'no-cache'
+        });
 
-            // Проверяем ответ
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const result = await response.json();
-            
-            if (result.success) {
-                console.log('Данные успешно отправлены:', result);
-                this.showNotification('✅ Ваше решение отправлено тренеру!');
-                
-                // Логируем успешную отправку
-                console.log('Отправленные данные:', submissionData);
-                console.log('Ответ сервера:', result);
-            } else {
-                throw new Error(result.error || result.message || 'Неизвестная ошибка сервера');
-            }
-            
-        } catch (error) {
-            console.error('Ошибка отправки данных:', error);
-            
-            // Показываем конкретную ошибку
-            let errorMessage = '❌ Ошибка отправки';
-            if (error.message.includes('Failed to fetch')) {
-                errorMessage += ': Проблема с сетью';
-            } else if (error.message.includes('HTTP error')) {
-                errorMessage += ': Ошибка сервера';
-            } else {
-                errorMessage += ': ' + error.message;
-            }
-            
-            this.showNotification(errorMessage);
-            
-            // Предлагаем альтернативу
-            setTimeout(() => {
-                if (confirm('Не удалось отправить данные автоматически. Хотите скопировать данные для ручной отправки?')) {
-                    this.copyDataToClipboard(justification);
-                }
-            }, 2000);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+
+        const result = await response.json();
+        
+        if (result.success) {
+            console.log('Данные успешно отправлены:', result);
+            this.showNotification('✅ Ваше решение отправлено тренеру!');
+            console.log('Отправленные данные:', submissionData);
+        } else {
+            throw new Error(result.error || result.message || 'Неизвестная ошибка сервера');
+        }
+        
+    } catch (error) {
+        console.error('Ошибка отправки данных:', error);
+        
+        let errorMessage = '❌ Ошибка отправки';
+        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+            errorMessage += ': Проблема с сетью или CORS';
+        } else if (error.message.includes('HTTP error')) {
+            errorMessage += ': Ошибка сервера';
+        } else {
+            errorMessage += ': ' + error.message;
+        }
+        
+        this.showNotification(errorMessage);
+        
+        // Предлагаем альтернативу
+        setTimeout(() => {
+            if (confirm('Не удалось отправить данные автоматически. Хотите скопировать данные для ручной отправки?')) {
+                this.copyDataToClipboard(justification);
+            }
+        }, 2000);
     }
+}
 
     // Функция для копирования данных в буфер обмена (резервный вариант)
     copyDataToClipboard(justification) {
