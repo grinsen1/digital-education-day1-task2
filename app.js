@@ -200,7 +200,7 @@ class MediaPlanningApp {
                     "VTR%": null,
                     "CPV": null,
                     "Частота": 4.999999999999999,
-                    "CPT": 599.9999999999999,
+                    "CPT": 599.99,
                     "PI": 0.39,
                     "CPVisit": 161.94,
                     "CPA": 10380.57,
@@ -295,7 +295,7 @@ class MediaPlanningApp {
                     "VTR%": null,
                     "CPV": null,
                     "Частота": 3.0000000000000004,
-                    "CPT": 570.0000000000001,
+                    "CPT": 570,
                     "PI": 0.32,
                     "CPVisit": 204.74,
                     "CPA": 16027.29,
@@ -333,7 +333,7 @@ class MediaPlanningApp {
                     "VTR%": null,
                     "CPV": null,
                     "Частота": 4.999999999999999,
-                    "CPT": 799.9999999999999,
+                    "CPT": 799.99,
                     "PI": 0.34,
                     "CPVisit": 162.27180527383043,
                     "CPA": 11946.16,
@@ -1017,10 +1017,10 @@ class MediaPlanningApp {
             // Если площадка еще не выбрана
             if (!selectedIds.includes(platform['п/п'])) {
                 const option = document.createElement('option');
-                const ctr = platform['CTR%'];
-                const vtr = platform['VTR%'];
+                const ctr = platform['CTR%']*100;
+                const vtr = platform['VTR%']*100;
                 option.value = platform['п/п'];
-                option.textContent = `${platform.Сайт} - ${platform.Формат} (${platform.Категория}): CPM - (${platform.CPM}), CPT - (${platform.CPT}), CTR - (${ctr}), VTR - (${vtr}), CPC - (${platform.CPC}), CPA - (${platform.CPA}) `;
+                option.textContent = `${platform.Сайт} - ${platform.Формат} (${platform.Категория}): CPM - (${platform.CPM}), CPT - (${platform.CPT}), CTR - (${ctr}%), VTR - (${vtr}%), CPC - (${platform.CPC}), CPA - (${platform.CPA}) `;
                 select.appendChild(option);
             }
         });
