@@ -44,7 +44,7 @@ class MediaPlanningApp {
                     "Стоимость за единицу": 240.00000000000003,
                     "CPM": 240.00,
                     "CTR%": 0.0073,
-                    "CPC": 32.87671232876712,
+                    "CPC": 32.87,
                     "VTR%": 0.85,
                     "CPV": 0.28,
                     "Частота": 2.099999930116649,
@@ -1020,7 +1020,7 @@ class MediaPlanningApp {
                 const ctr = platform['CTR%'];
                 const vtr = platform['VTR%'];
                 option.value = platform['п/п'];
-                option.textContent = `${platform.Сайт} - ${platform.Формат} (${platform.Категория}): CPM - (${platform.CPM}), CPT - (${platform.CPT}), CTR - ($ctr), VTR - ($vtr), CPC - (${platform.CPC}), CPA - (${platform.CPA}) `;
+                option.textContent = `${platform.Сайт} - ${platform.Формат} (${platform.Категория}): CPM - (${platform.CPM}), CPT - (${platform.CPT}), CTR - (${ctr}), VTR - (${vtr}), CPC - (${platform.CPC}), CPA - (${platform.CPA}) `;
                 select.appendChild(option);
             }
         });
