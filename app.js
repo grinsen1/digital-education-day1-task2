@@ -1018,7 +1018,7 @@ class MediaPlanningApp {
             if (!selectedIds.includes(platform['п/п'])) {
                 const option = document.createElement('option');
                 option.value = platform['п/п'];
-                option.textContent = `${platform.Сайт} - ${platform.Формат} (${platform.Категория})`;
+                option.textContent = `${platform.Сайт} - ${platform.Формат} (${platform.Категория}): CPM - (${platform.CPM}), CPT - (${platform.CPT}), CTR - (${platform.CTR}), VTR - (${platform.VTR}), CPC - (${platform.CPC}, CPA - (${platform.CPA}) `;
                 select.appendChild(option);
             }
         });
