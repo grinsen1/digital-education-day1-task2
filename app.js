@@ -1626,7 +1626,7 @@ async sendToGoogleAppsScript(justification) {
             const row = document.createElement('tr');
             
             // Форматирование процентных значений
-            const ctrFormatted = platform['CTR%'] ? (platform['CTR%'] * 100).toFixed(4) + '%' : '-';
+            const ctrFormatted = platform['CTR%'] ? (platform['CTR%'] * 100).toFixed(2) + '%' : '-';
             const vtrFormatted = platform['VTR%'] ? (platform['VTR%'] * 100).toFixed(2) + '%' : '-';
             
             row.innerHTML = `
@@ -1634,11 +1634,11 @@ async sendToGoogleAppsScript(justification) {
                 <td>${platform.Сайт}</td>
                 <td>${platform.Формат}</td>
                 <td>${platform.Категория}</td>
-                <td>${platform.CPM ? platform.CPM.toFixed(2) : '-'}</td>
+                <td>${platform.CPM ? platform.CPM.toFixed(0) : '-'}</td>
                 <td>${ctrFormatted}</td>
                 <td>${platform.CPC ? platform.CPC.toFixed(2) : '-'}</td>
                 <td>${vtrFormatted}</td>
-                <td>${platform.CPT ? platform.CPT.toFixed(2) : '-'}</td>
+                <td>${platform.CPT ? platform.CPT.toFixed(0) : '-'}</td>
                 <td>${platform.CPA ? platform.CPA.toFixed(2) : '-'}</td>
                 <td>
                     <input type="checkbox" class="compare-checkbox" data-id="${platform['п/п']}" 
