@@ -1017,8 +1017,10 @@ class MediaPlanningApp {
             // Если площадка еще не выбрана
             if (!selectedIds.includes(platform['п/п'])) {
                 const option = document.createElement('option');
+                const ctr = platform['CTR%'];
+                const vtr = platform['VTR%'];
                 option.value = platform['п/п'];
-                option.textContent = `${platform.Сайт} - ${platform.Формат} (${platform.Категория}): CPM - (${platform.CPM}), CPT - (${platform.CPT}), CTR - (${platform.['CTR%']}), VTR - (${platform.['VTR%']}), CPC - (${platform.CPC}, CPA - (${platform.CPA}) `;
+                option.textContent = `${platform.Сайт} - ${platform.Формат} (${platform.Категория}): CPM - (${platform.CPM}), CPT - (${platform.CPT}), CTR - ($ctr), VTR - ($vtr), CPC - (${platform.CPC}), CPA - (${platform.CPA}) `;
                 select.appendChild(option);
             }
         });
