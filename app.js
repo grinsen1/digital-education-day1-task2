@@ -855,7 +855,7 @@ class MediaPlanningApp {
                     <span class="assignment-type">${this.getAssignmentTypeText(key)}</span>
                     <h3>${assignment.title}</h3>
                     <p>${assignment.description}</p>
-                    <p>Количество площадок для выбора: ${assignment.slots}</p>
+                    <p>Количество площадок для выбора: до ${assignment.slots}</p>
                     <button class="btn btn--primary mt-8" data-assignment="${key}">Приступить к заданию</button>
                 </div>
             `;
