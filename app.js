@@ -909,7 +909,7 @@ class MediaPlanningApp {
         
         if (titleElement) titleElement.textContent = assignment.title;
         if (descElement) descElement.textContent = assignment.description;
-        if (slotsElement) slotsElement.textContent = `Выберите ${assignment.slots} площадок для этого задания.`;
+        if (slotsElement) slotsElement.textContent = `Выберите до ${assignment.slots} площадок для этого задания.`;
         
         // Рендерим слоты для выбора площадок
         this.renderPlatformSlots();
