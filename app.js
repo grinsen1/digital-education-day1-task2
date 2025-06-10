@@ -1063,7 +1063,7 @@ class MediaPlanningApp {
             
             const ctrFormatted = platform['CTR%'] ? (platform['CTR%'] * 100).toFixed(1) + '%' : '-';
             const vtrFormatted = platform['VTR%'] ? (platform['VTR%'] * 100).toFixed(0) + '%' : '-';
-            const piFormatted = platform['PI'] ? (platform['PI'] * 100).toFixed(0) + '%' : '-';
+           
             
             // Сокращаем название если слишком длинное
             const siteName = platform.Сайт;
@@ -1093,8 +1093,8 @@ class MediaPlanningApp {
                             <span class="value">${platform.CPA ? Math.round(platform.CPA) : '-'}</span>
                         </div>
                         <div class="platform-metric">
-                            <span class="label">PI</span>
-                            <span class="value">${piFormatted}</span>
+                            <span class="label">CPT</span>
+                            <span class="value">${platform.CPT ? Math.round(platform.CPT) : '-'}</span>
                         </div>
                     </div>
                 </div>
