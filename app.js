@@ -660,7 +660,7 @@ class MediaPlanningApp {
         // Отображаем бенчмарки в разделе обучения
         const elements = {
             'cpm-benchmark': this.data.benchmarks.CPM,
-            'ctr-benchmark': (this.data.benchmarks.CTR * 100).toFixed(4),
+            'ctr-benchmark': (this.data.benchmarks.CTR * 100).toFixed(2),
             'cpc-benchmark': this.data.benchmarks.CPC,
             'vtr-benchmark': (this.data.benchmarks.VTR * 100).toFixed(2),
             'cpt-benchmark': this.data.benchmarks.CPT,
@@ -677,7 +677,7 @@ class MediaPlanningApp {
         // Заполняем бенчмарки в разделе заданий
         const assignmentElements = {
             'cpm-benchmark-assignments': this.data.benchmarks.CPM,
-            'ctr-benchmark-assignments': (this.data.benchmarks.CTR * 100).toFixed(4),
+            'ctr-benchmark-assignments': (this.data.benchmarks.CTR * 100).toFixed(2),
             'cpc-benchmark-assignments': this.data.benchmarks.CPC,
             'vtr-benchmark-assignments': (this.data.benchmarks.VTR * 100).toFixed(2),
             'cpt-benchmark-assignments': this.data.benchmarks.CPT,
