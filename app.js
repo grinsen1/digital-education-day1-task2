@@ -1379,7 +1379,7 @@ async sendToGoogleAppsScript(justification) {
             const row = document.createElement('tr');
             
             // Форматирование процентных значений
-            const ctrFormatted = platform['CTR%'] ? (platform['CTR%'] * 100).toFixed(4) + '%' : '-';
+            const ctrFormatted = platform['CTR%'] ? (platform['CTR%'] * 100).toFixed(2) + '%' : '-';
             const vtrFormatted = platform['VTR%'] ? (platform['VTR%'] * 100).toFixed(2) + '%' : '-';
             
             row.innerHTML = `
