@@ -1017,8 +1017,8 @@ class MediaPlanningApp {
             // Если площадка еще не выбрана
             if (!selectedIds.includes(platform['п/п'])) {
                 const option = document.createElement('option');
-                const ctr = platform['CTR%']*100;
-                const vtr = platform['VTR%']*100;
+                const ctr = Math.round(platform['CTR%']*100);
+                const vtr = Math.round(platform['VTR%']*100);
                 option.value = platform['п/п'];
                 option.textContent = `${platform.Сайт} - ${platform.Формат} (${platform.Категория}): CPM - (${platform.CPM}), CPT - (${platform.CPT}), CTR - (${ctr}%), VTR - (${vtr}%), CPC - (${platform.CPC}), CPA - (${platform.CPA}) `;
                 select.appendChild(option);
