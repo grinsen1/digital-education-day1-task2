@@ -314,7 +314,7 @@ class MediaPlanningApp {
                     "VTR%": null,
                     "CPV": null,
                     "Частота": 3.9999999999999996,
-                    "CPT": 919.99,
+                    "CPT": 920,
                     "PI": 0.36,
                     "CPVisit": 255.55,
                     "CPA": 17798,
